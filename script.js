@@ -56,6 +56,15 @@ const gameboard = (function() {
     return { getBoard, setCell };
 })();
 
+function createPlayer(name, sign) {
+    
+    return { name, sign};
+}
+
+const player1 = createPlayer("Player1", "X");
+const player2 = createPlayer("Player2", "O");
+console.log(player1);
+console.log(player2);
 
 
 gameboard.setCell(1, 1, "X");
@@ -66,3 +75,4 @@ gameboard.setCell(1, 1, "X")
 
 gameboard.setCell(5, 5, 'X');
 gameboard.setCell();
+

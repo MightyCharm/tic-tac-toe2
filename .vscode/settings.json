@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
         "gameboard"
+    ],
+    "conventionalCommits.scopes": [
+        "gameboard"
     ]
 }
