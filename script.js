@@ -149,6 +149,27 @@ const game = (function () {
   return { play, getWinner, end };
 })();
 
+const DisplayController = (function() {
+  const board = document.querySelector("#board");
+  console.log(board)
+  board.addEventListener("click", (e) => {
+    checkBoard(e)
+  });
+
+  function checkBoard(e) {
+    const cell = e.target;
+    if(!cell.classList.contains('cell')) return;
+    const row = cell.dataset.row;
+    const col = cell.dataset.col;
+    console.log(`Clicked cell: [${row}, ${col}]`);
+  }
+
+  // only thing that touches de DOM
+  // only thing that listens to clicks
+  // only thing that updates the screen
+})();
+
+/*
 // game loop instead of recursion, only needed for first step, get game running in console
 alert("Tic Tac Toe. Game starts, have fun!");
 while (true) {
@@ -167,3 +188,4 @@ while (true) {
   }
 }
 alert("Game Over.\nHave a nice day, bye!");
+*/
