@@ -37,6 +37,14 @@ const game = (function () {
   const player2 = createPlayer("Otto", "O");
   let currentPlayer = player1;
 
+  function getCurrentPlayer() {
+    return currentPlayer;
+  }
+
+  function switchPlayer() {
+    currentPlayer = currentPlayer === player1 ? player2 : player1;
+  }
+
   function play() {
     const rowInput = prompt("Which row do you want to place your sign (0-2)?");
     const columnInput = prompt(
@@ -55,7 +63,7 @@ const game = (function () {
     if (!isSet) {
       return "input-not-set";
     }
-    currentPlayer = currentPlayer === player1 ? player2 : player1;
+    switchPlayer();
     return "input-set";
   }
 
@@ -146,7 +154,7 @@ const game = (function () {
     }
     alert("No space left on the board. DRAW!");
   }
-  return { play, getWinner, end };
+  return { getCurrentPlayer, switchPlayer, play, getWinner, end };
 })();
 
 const displayController = (function() {
@@ -159,29 +167,11 @@ const displayController = (function() {
   function checkBoard(e) {
     const cell = e.target;
     if(!cell.classList.contains('cell')) return;
-    cell.textContent = "X";
+    cell.textContent = game.getCurrentPlayer().sign;
 
     const row = cell.dataset.row;
     const col = cell.dataset.col;
-    console.log(`Clicked cell: [${row}, ${col}]`);
+    const player = game.getCurrentPlayer();
+    console.log(`Clicked cell: [${row}, ${col}] currentPlayer: ${player.name}`);
   }
 })();
-
-/*
-alert("Tic Tac Toe. Game starts, have fun!");
-while (true) {
-  gameboard.displayBoard();
-  const action = game.play();
-  if (action === "quit") {
-    break;
-  }
-  if (action === "input-set") {
-    const status = game.getWinner(); // returns  const status = {continue: true, winner: ""}
-    if (!status.continue) {
-      game.end(status);
-      break;
-    }
-  }
-}
-alert("Game Over.\nHave a nice day, bye!");
-*/
