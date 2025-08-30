@@ -4,6 +4,7 @@
     ],
     "conventionalCommits.scopes": [
         "gameboard",
-        "ui"
+        "ui",
+        "display"
     ]
 }
