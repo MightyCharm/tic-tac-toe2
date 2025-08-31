@@ -29,7 +29,7 @@ const gameboard = (function () {
   function clear() {
     board.forEach((row) => {
       row.fill("");
-    })
+    });
   }
   return { getBoard, displayBoard, setCell, clear };
 })();
@@ -38,13 +38,12 @@ function createPlayer(name, sign) {
   return { name, sign };
 }
 
-
-
 const game = (function () {
   let player1, player2, currentPlayer;
 
   function start() {
-     gameboard.clear();
+    gameboard.clear();
+    displayController.clearBoard();
     player1 = createPlayer("Sebastian", "X");
     player2 = createPlayer("Otto", "O");
     currentPlayer = player1;
@@ -137,7 +136,7 @@ const game = (function () {
         [0, 2],
         [1, 1],
         [2, 0],
-      ] // cross2
+      ], // cross2
     ];
     // check rows
     for (let i = 0; i < pattern.length; i++) {
@@ -151,8 +150,8 @@ const game = (function () {
         return status;
       }
     }
-    const full = board.every(row => row.every(cell => cell != ""));
-    if(full) {
+    const full = board.every((row) => row.every((cell) => cell != ""));
+    if (full) {
       status.continue = false;
       status.winner = "draw";
     }
@@ -162,39 +161,50 @@ const game = (function () {
   function end(status) {
     gameboard.displayBoard();
     if (status.winner != "draw") {
-      alert(`Winner is: ${status.winner === "X" ? player1.name : player2.name} "${status.winner}"`);
+      alert(
+        `Winner is: ${status.winner === "X" ? player1.name : player2.name} "${
+          status.winner
+        }"`
+      );
       return;
     }
     alert("No space left on the board. DRAW!");
   }
-  return {start, getCurrentPlayer, switchPlayer, play, getWinner, end };
+  return { start, getCurrentPlayer, switchPlayer, play, getWinner, end };
 })();
 
-
-
-const displayController = (function() {
+const displayController = (function () {
   const board = document.querySelector("#board");
-  console.log(board)
+  const cells = document.querySelectorAll(".cell");
+  console.log(board);
   board.addEventListener("click", (e) => {
     checkBoard(e);
   });
 
   function checkBoard(e) {
     const cell = e.target;
-    if(!cell.classList.contains('cell')) return;
+    if (!cell.classList.contains("cell")) return;
     const row = cell.dataset.row;
     const col = cell.dataset.col;
     const player = game.getCurrentPlayer();
     console.log(`Clicked cell: [${row}, ${col}] currentPlayer: ${player.name}`);
     const success = gameboard.setCell(row, col, player);
-    if(success) {
+    if (success) {
       cell.textContent = player.sign;
       game.switchPlayer();
       const status = game.getWinner();
       console.log(status.continue);
-      if(!status.continue) {
-        game.end(status)
+      if (!status.continue) {
+        game.end(status);
       }
     }
   }
+
+  function clearBoard() {
+    cells.forEach(cell => {
+      cell.textContent = "";
+    })
+  }
+
+  return { clearBoard };
 })();
