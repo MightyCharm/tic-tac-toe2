@@ -32,10 +32,16 @@ function createPlayer(name, sign) {
   return { name, sign };
 }
 
+
+
 const game = (function () {
-  const player1 = createPlayer("Sebastian", "X");
-  const player2 = createPlayer("Otto", "O");
-  let currentPlayer = player1;
+  let player1, player2, currentPlayer;
+
+  function start() {
+    player1 = createPlayer("Sebastian", "X");
+    player2 = createPlayer("Otto", "O");
+    currentPlayer = player1;
+  }
 
   function getCurrentPlayer() {
     return currentPlayer;
@@ -154,8 +160,10 @@ const game = (function () {
     }
     alert("No space left on the board. DRAW!");
   }
-  return { getCurrentPlayer, switchPlayer, play, getWinner, end };
+  return {start, getCurrentPlayer, switchPlayer, play, getWinner, end };
 })();
+
+
 
 const displayController = (function() {
   const board = document.querySelector("#board");
