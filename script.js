@@ -149,7 +149,7 @@ const game = (function () {
   function end(status) {
     gameboard.displayBoard();
     if (status.winner != "draw") {
-      alert(`Winner is: ${status.winner === "X" ? player1.name : player2.name}`);
+      alert(`Winner is: ${status.winner === "X" ? player1.name : player2.name} "${status.winner}"`);
       return;
     }
     alert("No space left on the board. DRAW!");
@@ -161,17 +161,25 @@ const displayController = (function() {
   const board = document.querySelector("#board");
   console.log(board)
   board.addEventListener("click", (e) => {
-    checkBoard(e)
+    checkBoard(e);
   });
 
   function checkBoard(e) {
     const cell = e.target;
     if(!cell.classList.contains('cell')) return;
-    cell.textContent = game.getCurrentPlayer().sign;
-
     const row = cell.dataset.row;
     const col = cell.dataset.col;
     const player = game.getCurrentPlayer();
     console.log(`Clicked cell: [${row}, ${col}] currentPlayer: ${player.name}`);
+    const success = gameboard.setCell(row, col, player);
+    if(success) {
+      cell.textContent = player.sign;
+      game.switchPlayer();
+      const status = game.getWinner();
+      console.log(status.continue);
+      if(!status.continue) {
+        game.end(status)
+      }
+    }
   }
 })();
