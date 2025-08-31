@@ -25,7 +25,13 @@ const gameboard = (function () {
     }
     return false;
   }
-  return { getBoard, displayBoard, setCell };
+
+  function clear() {
+    board.forEach((row) => {
+      row.fill("");
+    })
+  }
+  return { getBoard, displayBoard, setCell, clear };
 })();
 
 function createPlayer(name, sign) {
@@ -38,6 +44,7 @@ const game = (function () {
   let player1, player2, currentPlayer;
 
   function start() {
+     gameboard.clear();
     player1 = createPlayer("Sebastian", "X");
     player2 = createPlayer("Otto", "O");
     currentPlayer = player1;
