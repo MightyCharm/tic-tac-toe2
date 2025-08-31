@@ -41,11 +41,11 @@ function createPlayer(name, sign) {
 const game = (function () {
   let player1, player2, currentPlayer;
 
-  function start() {
+  function start(player1Name, player2Name) {
     gameboard.clear();
     displayController.clearBoard();
-    player1 = createPlayer("Sebastian", "X");
-    player2 = createPlayer("Otto", "O");
+    player1 = createPlayer(player1Name, "X");
+    player2 = createPlayer(player2Name, "O");
     currentPlayer = player1;
   }
 
@@ -176,10 +176,62 @@ const game = (function () {
 const displayController = (function () {
   const board = document.querySelector("#board");
   const cells = document.querySelectorAll(".cell");
-  console.log(board);
+  // 1. Grab all elements
+  const inputPlayer1 = document.querySelector("#input-player1");
+  const btnPlayer1 = document.querySelector("#btn-player1");
+  const inputPlayer2 = document.querySelector("#input-player2");
+  const btnPlayer2 = document.querySelector("#btn-player2");
+  const gameInfo = document.querySelector(".div-gameInfo");
+
+  let player1Name = null;
+  let player2Name = null;
+
+  // 2. Add click listeners to both "Enter" buttons
+  btnPlayer1.addEventListener("click", (e) => checkInput(e));
+
+  btnPlayer2.addEventListener("click", (e) => checkInput(e));
+
   board.addEventListener("click", (e) => {
     checkBoard(e);
   });
+
+  function checkInput(e) {
+    const targetId = e.target.id;
+    let valid = false;
+
+    if (targetId === "btn-player1") {
+      const value = inputPlayer1.value.trim();
+      if (value) {
+        player1Name = value;
+        console.log(player1Name);
+        inputPlayer1.disabled = true;
+        btnPlayer1.disabled = true;
+        valid = true;
+      }
+    }
+    if (targetId === "btn-player2") {
+      const value = inputPlayer2.value.trim();
+      if (value) {
+        player2Name = value;
+        console.log(player2Name);
+        inputPlayer2.disabled = true;
+        btnPlayer2.disabled = true;
+        valid = true;
+      }
+    }
+
+    if (!valid) {
+      gameInfo.textContent = "Please enter a name to start the game.";
+    }
+
+    if (player1Name && player2Name) {
+      game.start(player1Name, player2Name);
+      displayController.clearBoard();
+      gameInfo.textContent = `${player1Name} vs ${player2Name} - ${
+        game.getCurrentPlayer().name
+      }'s turn`;
+    }
+  }
 
   function checkBoard(e) {
     const cell = e.target;
@@ -201,10 +253,37 @@ const displayController = (function () {
   }
 
   function clearBoard() {
-    cells.forEach(cell => {
+    cells.forEach((cell) => {
       cell.textContent = "";
-    })
+    });
   }
 
   return { clearBoard };
 })();
+
+/*
+1. Grab all elements
+→ inputs, buttons, status
+→ do it at the top of displayController
+2. Add click listeners to both "Enter" buttons
+→ when clicked:
+read the input
+if empty → use default ("Player X" / "Player O")
+save the name in player1Name or player2Name
+disable that input and button
+3. After saving — check: are both names set?
+→ if yes:
+call game.start(player1Name, player2Name)
+call clearBoard()
+update status to show whose turn it is
+4. No extra button. No reset yet.
+→ the second "Enter" starts the game
+→ order doesn’t matter
+5. Test it
+→ reload
+→ type P1 → Enter
+→ type P2 → Enter
+→ board clears → game starts → first move works
+6. If yes — commit
+feat(display): get player names and start game on valid input
+*/
