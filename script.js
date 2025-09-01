@@ -177,11 +177,11 @@ const displayController = (function () {
   const board = document.querySelector("#board");
   const cells = document.querySelectorAll(".cell");
   // 1. Grab all elements
-  const inputPlayer1 = document.querySelector("#input-player1");
-  const btnPlayer1 = document.querySelector("#btn-player1");
-  const inputPlayer2 = document.querySelector("#input-player2");
-  const btnPlayer2 = document.querySelector("#btn-player2");
-  const gameInfo = document.querySelector(".div-gameInfo");
+  const inputPlayer1 = document.querySelector("#inputPlayer1");
+  const btnPlayer1 = document.querySelector("#btnPlayer1");
+  const inputPlayer2 = document.querySelector("#inputPlayer2");
+  const btnPlayer2 = document.querySelector("#btnPlayer2");
+  const gameInfo = document.querySelector(".divGameInfo");
 
   let player1Name = null;
   let player2Name = null;
@@ -199,7 +199,7 @@ const displayController = (function () {
     const targetId = e.target.id;
     let valid = false;
 
-    if (targetId === "btn-player1") {
+    if (targetId === "btnPlayer1") {
       const value = inputPlayer1.value.trim();
       if (value) {
         player1Name = value;
@@ -209,7 +209,7 @@ const displayController = (function () {
         valid = true;
       }
     }
-    if (targetId === "btn-player2") {
+    if (targetId === "btnPlayer2") {
       const value = inputPlayer2.value.trim();
       if (value) {
         player2Name = value;
@@ -260,30 +260,3 @@ const displayController = (function () {
 
   return { clearBoard };
 })();
-
-/*
-1. Grab all elements
-→ inputs, buttons, status
-→ do it at the top of displayController
-2. Add click listeners to both "Enter" buttons
-→ when clicked:
-read the input
-if empty → use default ("Player X" / "Player O")
-save the name in player1Name or player2Name
-disable that input and button
-3. After saving — check: are both names set?
-→ if yes:
-call game.start(player1Name, player2Name)
-call clearBoard()
-update status to show whose turn it is
-4. No extra button. No reset yet.
-→ the second "Enter" starts the game
-→ order doesn’t matter
-5. Test it
-→ reload
-→ type P1 → Enter
-→ type P2 → Enter
-→ board clears → game starts → first move works
-6. If yes — commit
-feat(display): get player names and start game on valid input
-*/

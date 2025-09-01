@@ -9,17 +9,22 @@
   <body>
     <div class="container">
 
-      <div class="div-header">
+      <div class="divHeader">
         <h1>TIC TAC TOE</h1>
       </div>
 
-      <div class="div-player1">
-        <h2>Player 1</h2>
-        <input id="input-player1"/>
-        <button id="btn-player1">Enter</button>
+      <div class="divControls">
+        <button id="btnStartGame">Start Game</button>
+        <button id="btnNextRound" class="hidden">Next Round</button>
       </div>
 
-      <div id="board" class="div-board">
+      <div class="divPlayer1">
+        <h2>Player 1</h2>
+        <input id="inputPlayer1"/>
+        <button id="btnPlayer1">Enter</button>
+      </div>
+
+      <div id="board" class="divBoard">
         <div class="cell" data-row="0" data-col="0"></div>
         <div class="cell" data-row="0" data-col="1"></div>
         <div class="cell" data-row="0" data-col="2"></div>
@@ -33,13 +38,13 @@
         <div class="cell" data-row="2" data-col="2"></div>
       </div>
 
-      <div class="div-player2">
+      <div class="divPlayer2">
         <h2>Player 2</h2>
-        <input id="input-player2"/>
-        <button id="btn-player2">Enter</button>
+        <input id="inputPlayer2"/>
+        <button id="btnPlayer2">Enter</button>
       </div>
 
-      <div class="div-gameInfo">
+      <div class="divGameInfo">
         <p>Please Enter Name</p>
       </div>
 

@@ -13,6 +13,7 @@ body {
     display: grid;
     grid-template-areas:
         "header header header"
+        "controls controls controls"
         "player1 board player2"
         "info info info";
 
@@ -27,28 +28,32 @@ body {
     margin: 0 auto;
 }
 
-.div-header,
-.div-gameInfo {
+.divHeader,
+.divGameInfo {
     width: 100%;
     text-align: center;
 }
 
-.div-player1,
-.div-player2 {
+.divPlayer1,
+.divPlayer2 {
     width: 100%;
     display: flex;
     justify-content: center;
 }
 
-.div-header {
+.divHeader {
     grid-area: header;
 }
 
-.div-player1 {
+.divPlayer1 {
     grid-area: player1;
 }
 
-.div-board {
+.divControls {
+    grid-area: controls;
+}
+
+.divBoard {
     grid-area: board;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -80,11 +85,15 @@ body {
     transform: scale(0.95);
 }
 
-.div-player2 {
+.divPlayer2 {
     grid-area: player2;
 }
 
-.div-gameInfo {
+.divGameInfo {
     grid-area: info;
+}
+
+.hidden {
+    display: none;
 }
 
