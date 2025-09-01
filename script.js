@@ -176,23 +176,34 @@ const game = (function () {
 const displayController = (function () {
   const board = document.querySelector("#board");
   const cells = document.querySelectorAll(".cell");
-  // 1. Grab all elements
   const inputPlayer1 = document.querySelector("#inputPlayer1");
   const btnPlayer1 = document.querySelector("#btnPlayer1");
   const inputPlayer2 = document.querySelector("#inputPlayer2");
   const btnPlayer2 = document.querySelector("#btnPlayer2");
   const gameInfo = document.querySelector(".divGameInfo");
+  const btnStartGame = document.querySelector("#btnStartGame");
 
   let player1Name = null;
   let player2Name = null;
 
-  // 2. Add click listeners to both "Enter" buttons
   btnPlayer1.addEventListener("click", (e) => checkInput(e));
 
   btnPlayer2.addEventListener("click", (e) => checkInput(e));
 
   board.addEventListener("click", (e) => {
     checkBoard(e);
+  });
+
+  btnStartGame.addEventListener("click", () => {
+    const name1 = getPlayer1Name();
+    const name2 = getPlayer2Name();
+    if (name1 != null && name2 != null) {
+      game.start(name1, name2);
+      gameInfo.textContent = `${game.getCurrentPlayer().name}'s turn`;
+      btnStartGame.classList.add("hidden");
+    } else {
+      gameInfo.textContent = "Please enter both names to start the game.";
+    }
   });
 
   function checkInput(e) {
@@ -202,34 +213,22 @@ const displayController = (function () {
     if (targetId === "btnPlayer1") {
       const value = inputPlayer1.value.trim();
       if (value) {
-        player1Name = value;
-        console.log(player1Name);
-        inputPlayer1.disabled = true;
-        btnPlayer1.disabled = true;
-        valid = true;
+        if (setPlayer1Name(value)) {
+          inputPlayer1.disabled = true;
+          btnPlayer1.disabled = true;
+          valid = true;
+        }
       }
     }
     if (targetId === "btnPlayer2") {
       const value = inputPlayer2.value.trim();
       if (value) {
-        player2Name = value;
-        console.log(player2Name);
-        inputPlayer2.disabled = true;
-        btnPlayer2.disabled = true;
-        valid = true;
+        if (setPlayer2Name(value)) {
+          inputPlayer2.disabled = true;
+          btnPlayer2.disabled = true;
+          valid = true;
+        }
       }
-    }
-
-    if (!valid) {
-      gameInfo.textContent = "Please enter a name to start the game.";
-    }
-
-    if (player1Name && player2Name) {
-      game.start(player1Name, player2Name);
-      displayController.clearBoard();
-      gameInfo.textContent = `${player1Name} vs ${player2Name} - ${
-        game.getCurrentPlayer().name
-      }'s turn`;
     }
   }
 
@@ -258,5 +257,31 @@ const displayController = (function () {
     });
   }
 
+  function getPlayer1Name() {
+    return player1Name;
+  }
+
+  function getPlayer2Name() {
+    return player2Name;
+  }
+
+  function setPlayer1Name(input) {
+    const value = input.trim();
+    if(value) {
+      player1Name = value;
+      return true;
+    }
+    return false;
+    
+  }
+
+  function setPlayer2Name(input) {
+    const value = input.trim();
+    if(value) {
+      player2Name = value;
+      return true;
+    }
+    return false;
+  }
   return { clearBoard };
 })();
