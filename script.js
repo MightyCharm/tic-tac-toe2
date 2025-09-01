@@ -40,6 +40,8 @@ function createPlayer(name, sign) {
 
 const game = (function () {
   let player1, player2, currentPlayer;
+  let gameOver = false;
+  let lastStarter = null; // new
 
   function start(player1Name, player2Name) {
     gameboard.clear();
@@ -47,6 +49,7 @@ const game = (function () {
     player1 = createPlayer(player1Name, "X");
     player2 = createPlayer(player2Name, "O");
     currentPlayer = player1;
+    lastStarter = player1; // new
   }
 
   function getCurrentPlayer() {
@@ -77,6 +80,16 @@ const game = (function () {
     }
     switchPlayer();
     return "input-set";
+  }
+
+  // this commit
+  function newRound() {
+    gameboard.clear();
+    currentPlayer = lastStarter === player1 ? player2 : player1; // new
+    lastStarter = currentPlayer; // new
+    gameOver = false;
+
+    console.log("Next round starter: ", currentPlayer.name, "(" , currentPlayer.sign,")");
   }
 
   function isValidInput(rowInput, columnInput) {
@@ -147,6 +160,8 @@ const game = (function () {
       if (cellA != "" && cellA === cellB && cellB === cellC) {
         status.continue = false;
         status.winner = cellA;
+        // this commit
+        gameOver = true;
         return status;
       }
     }
@@ -154,6 +169,8 @@ const game = (function () {
     if (full) {
       status.continue = false;
       status.winner = "draw";
+      // this commit
+      gameOver = true;
     }
     return status;
   }
@@ -170,7 +187,11 @@ const game = (function () {
     }
     alert("No space left on the board. DRAW!");
   }
-  return { start, getCurrentPlayer, switchPlayer, play, getWinner, end };
+
+  function isGameOver() {
+    return gameOver;
+  }
+  return { start, getCurrentPlayer, switchPlayer, play, newRound, getWinner, end };
 })();
 
 const displayController = (function () {
@@ -182,6 +203,8 @@ const displayController = (function () {
   const btnPlayer2 = document.querySelector("#btnPlayer2");
   const gameInfo = document.querySelector(".divGameInfo");
   const btnStartGame = document.querySelector("#btnStartGame");
+  // this commit
+  const btnNextRound = document.querySelector("#btnNextRound");
 
   let player1Name = null;
   let player2Name = null;
@@ -205,6 +228,13 @@ const displayController = (function () {
       gameInfo.textContent = "Please enter both names to start the game.";
     }
   });
+
+  btnNextRound.addEventListener("click", () => {
+    game.newRound();
+    clearBoard();
+    gameInfo.textContent = `${game.getCurrentPlayer().name}'s turn`;
+    btnNextRound.classList.add("hidden");
+  })
 
   function checkInput(e) {
     const targetId = e.target.id;
@@ -235,18 +265,21 @@ const displayController = (function () {
   function checkBoard(e) {
     const cell = e.target;
     if (!cell.classList.contains("cell")) return;
+
     const row = cell.dataset.row;
     const col = cell.dataset.col;
+
     const player = game.getCurrentPlayer();
-    console.log(`Clicked cell: [${row}, ${col}] currentPlayer: ${player.name}`);
+    if(!player) return // bug fix
     const success = gameboard.setCell(row, col, player);
     if (success) {
       cell.textContent = player.sign;
       game.switchPlayer();
       const status = game.getWinner();
-      console.log(status.continue);
       if (!status.continue) {
         game.end(status);
+        // this commit
+        btnNextRound.classList.remove("hidden")
       }
     }
   }

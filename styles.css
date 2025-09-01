@@ -50,6 +50,7 @@ body {
 }
 
 .divControls {
+    min-height: 30px;
     grid-area: controls;
 }
 
