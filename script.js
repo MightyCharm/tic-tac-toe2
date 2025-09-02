@@ -142,7 +142,11 @@ const game = (function () {
   function isGameOver() {
     return gameOver;
   }
-  return { start, getCurrentPlayer, switchPlayer, newRound, getWinner, end };
+
+  function setGameOver() {
+    gameOver = true;
+  }
+  return { start, getCurrentPlayer, switchPlayer, newRound, getWinner, end, isGameOver, setGameOver };
 })();
 
 const displayController = (function () {
@@ -214,6 +218,8 @@ const displayController = (function () {
   function checkBoard(e) {
     const cell = e.target;
     if (!cell.classList.contains("cell")) return;
+    console.log("game.isGameOver(): ",game.isGameOver());
+    if(game.isGameOver()) return;
 
     const row = cell.dataset.row;
     const col = cell.dataset.col;
@@ -226,6 +232,7 @@ const displayController = (function () {
       game.switchPlayer();
       const winner = game.getWinner();
       if (winner) {
+        game.setGameOver();
         game.end(winner);
         btnNextRound.classList.remove("hidden");
       } else {
