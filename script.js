@@ -67,20 +67,6 @@ const game = (function () {
     gameOver = false;
   }
 
-  function isValidInput(rowInput, columnInput) {
-    const row = Number(rowInput);
-    const column = Number(columnInput);
-    if (isNaN(row)) {
-      return false;
-    }
-    if (isNaN(column)) {
-      return false;
-    }
-    if (row > 2 || row < 0) return false;
-    if (column > 2 || column < 0) return false;
-    return true;
-  }
-
   function getWinner() {
     const status = { continue: true, winner: null };
     const board = gameboard.getBoard();
@@ -186,7 +172,6 @@ const displayController = (function () {
   });
 
   btnStartGame.addEventListener("click", () => {
-    console.log("btnStartGame");
     const name1 = getPlayer1Name();
     const name2 = getPlayer2Name();
     if (name1 != null && name2 != null) {
@@ -199,7 +184,6 @@ const displayController = (function () {
   });
 
   btnNextRound.addEventListener("click", () => {
-    console.log("btnNextRound");
     game.newRound();
     clearBoard();
     showStatus(`${game.getCurrentPlayer().name}'s turn`);
@@ -207,7 +191,6 @@ const displayController = (function () {
   })
 
   function checkInput(e) {
-    console.log("checkInput");
     const targetId = e.target.id;
     let valid = false;
     if (targetId === "btnPlayer1") {
