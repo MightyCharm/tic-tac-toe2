@@ -41,7 +41,7 @@ function createPlayer(name, sign) {
 const game = (function () {
   let player1, player2, currentPlayer;
   let gameOver = false;
-  let lastStarter = null; // new
+  let lastStarter = null;
 
   function start(player1Name, player2Name) {
     gameboard.clear();
@@ -49,7 +49,7 @@ const game = (function () {
     player1 = createPlayer(player1Name, "X");
     player2 = createPlayer(player2Name, "O");
     currentPlayer = player1;
-    lastStarter = player1; // new
+    lastStarter = player1;
   }
 
   function getCurrentPlayer() {
@@ -82,14 +82,11 @@ const game = (function () {
     return "input-set";
   }
 
-  // this commit
   function newRound() {
     gameboard.clear();
     currentPlayer = lastStarter === player1 ? player2 : player1; // new
     lastStarter = currentPlayer; // new
     gameOver = false;
-
-    console.log("Next round starter: ", currentPlayer.name, "(" , currentPlayer.sign,")");
   }
 
   function isValidInput(rowInput, columnInput) {
@@ -160,7 +157,6 @@ const game = (function () {
       if (cellA != "" && cellA === cellB && cellB === cellC) {
         status.continue = false;
         status.winner = cellA;
-        // this commit
         gameOver = true;
         return status;
       }
@@ -169,7 +165,6 @@ const game = (function () {
     if (full) {
       status.continue = false;
       status.winner = "draw";
-      // this commit
       gameOver = true;
     }
     return status;
@@ -178,14 +173,10 @@ const game = (function () {
   function end(status) {
     gameboard.displayBoard();
     if (status.winner != "draw") {
-      alert(
-        `Winner is: ${status.winner === "X" ? player1.name : player2.name} "${
-          status.winner
-        }"`
-      );
+      displayController.showStatus(`Winner is: ${status.winner === "X" ? player1.name : player2.name} "${status.winner}"`);
       return;
     }
-    alert("No space left on the board. DRAW!");
+    displayController.showStatus("No space left on the board. DRAW!");
   }
 
   function isGameOver() {
@@ -203,7 +194,6 @@ const displayController = (function () {
   const btnPlayer2 = document.querySelector("#btnPlayer2");
   const gameInfo = document.querySelector(".divGameInfo");
   const btnStartGame = document.querySelector("#btnStartGame");
-  // this commit
   const btnNextRound = document.querySelector("#btnNextRound");
 
   let player1Name = null;
@@ -222,24 +212,23 @@ const displayController = (function () {
     const name2 = getPlayer2Name();
     if (name1 != null && name2 != null) {
       game.start(name1, name2);
-      gameInfo.textContent = `${game.getCurrentPlayer().name}'s turn`;
+      showStatus(`${game.getCurrentPlayer().name}'s turn`);
       btnStartGame.classList.add("hidden");
     } else {
-      gameInfo.textContent = "Please enter both names to start the game.";
+      showStatus("Please enter both names to start the game.");
     }
   });
 
   btnNextRound.addEventListener("click", () => {
     game.newRound();
     clearBoard();
-    gameInfo.textContent = `${game.getCurrentPlayer().name}'s turn`;
+    showStatus(`${game.getCurrentPlayer().name}'s turn`);
     btnNextRound.classList.add("hidden");
   })
 
   function checkInput(e) {
     const targetId = e.target.id;
     let valid = false;
-
     if (targetId === "btnPlayer1") {
       const value = inputPlayer1.value.trim();
       if (value) {
@@ -270,7 +259,7 @@ const displayController = (function () {
     const col = cell.dataset.col;
 
     const player = game.getCurrentPlayer();
-    if(!player) return // bug fix
+    if(!player) return
     const success = gameboard.setCell(row, col, player);
     if (success) {
       cell.textContent = player.sign;
@@ -278,7 +267,6 @@ const displayController = (function () {
       const status = game.getWinner();
       if (!status.continue) {
         game.end(status);
-        // this commit
         btnNextRound.classList.remove("hidden")
       }
     }
@@ -304,8 +292,7 @@ const displayController = (function () {
       player1Name = value;
       return true;
     }
-    return false;
-    
+    return false; 
   }
 
   function setPlayer2Name(input) {
@@ -316,5 +303,10 @@ const displayController = (function () {
     }
     return false;
   }
-  return { clearBoard };
+
+  function showStatus(message) {
+    gameInfo.textContent = message;
+  }
+
+  return { clearBoard, showStatus };
 })();
