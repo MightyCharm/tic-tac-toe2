@@ -250,6 +250,9 @@ const displayController = (function () {
         game.end(status);
         btnNextRound.classList.remove("hidden")
       }
+      else {
+        showStatus(`${game.getCurrentPlayer().name}'s turn`);
+      }
     }
   }
 
