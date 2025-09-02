@@ -68,7 +68,6 @@ const game = (function () {
   }
 
   function getWinner() {
-    const status = { continue: true, winner: null };
     const board = gameboard.getBoard();
     const pattern = [
       [
@@ -119,28 +118,25 @@ const game = (function () {
       const cellB = board[b[0]][b[1]];
       const cellC = board[c[0]][c[1]];
       if (cellA != "" && cellA === cellB && cellB === cellC) {
-        status.continue = false;
-        status.winner = cellA;
-        gameOver = true;
-        return status;
+        return cellA;
       }
     }
     const full = board.every((row) => row.every((cell) => cell != ""));
-    if (full) {
-      status.continue = false;
-      status.winner = "draw";
-      gameOver = true;
-    }
-    return status;
+    if (full) return "draw";
+
+    return null;
   }
 
-  function end(status) {
+  function end(winner) {
+    console.log("winner:", winner);
     gameboard.displayBoard();
-    if (status.winner != "draw") {
-      displayController.showStatus(`Winner is: ${status.winner === "X" ? player1.name : player2.name} "${status.winner}"`);
+    if (winner === "draw") {
+      displayController.showStatus("No space left on the board. DRAW!");
       return;
     }
-    displayController.showStatus("No space left on the board. DRAW!");
+    displayController.showStatus(
+      `Winner is: ${winner === "X" ? player1.name : player2.name} "${winner}"`
+    );
   }
 
   function isGameOver() {
@@ -188,7 +184,7 @@ const displayController = (function () {
     clearBoard();
     showStatus(`${game.getCurrentPlayer().name}'s turn`);
     btnNextRound.classList.add("hidden");
-  })
+  });
 
   function checkInput(e) {
     const targetId = e.target.id;
@@ -223,17 +219,16 @@ const displayController = (function () {
     const col = cell.dataset.col;
 
     const player = game.getCurrentPlayer();
-    if(!player) return
+    if (!player) return;
     const success = gameboard.setCell(row, col, player);
     if (success) {
       cell.textContent = player.sign;
       game.switchPlayer();
-      const status = game.getWinner();
-      if (!status.continue) {
-        game.end(status);
-        btnNextRound.classList.remove("hidden")
-      }
-      else {
+      const winner = game.getWinner();
+      if (winner) {
+        game.end(winner);
+        btnNextRound.classList.remove("hidden");
+      } else {
         showStatus(`${game.getCurrentPlayer().name}'s turn`);
       }
     }
@@ -255,16 +250,16 @@ const displayController = (function () {
 
   function setPlayer1Name(input) {
     const value = input.trim();
-    if(value) {
+    if (value) {
       player1Name = value;
       return true;
     }
-    return false; 
+    return false;
   }
 
   function setPlayer2Name(input) {
     const value = input.trim();
-    if(value) {
+    if (value) {
       player2Name = value;
       return true;
     }
