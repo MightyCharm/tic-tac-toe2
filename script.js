@@ -60,28 +60,6 @@ const game = (function () {
     currentPlayer = currentPlayer === player1 ? player2 : player1;
   }
 
-  function play() {
-    const rowInput = prompt("Which row do you want to place your sign (0-2)?");
-    const columnInput = prompt(
-      "Which column do you want to place your sign (0-2)?"
-    );
-    if (rowInput === "q" || columnInput === "q") {
-      return "quit";
-    }
-    const row = Number(rowInput);
-    const column = Number(columnInput);
-    const isValid = isValidInput(row, column);
-    let isSet;
-    if (isValid) {
-      isSet = gameboard.setCell(row, column, currentPlayer);
-    }
-    if (!isSet) {
-      return "input-not-set";
-    }
-    switchPlayer();
-    return "input-set";
-  }
-
   function newRound() {
     gameboard.clear();
     currentPlayer = lastStarter === player1 ? player2 : player1; // new
@@ -182,7 +160,7 @@ const game = (function () {
   function isGameOver() {
     return gameOver;
   }
-  return { start, getCurrentPlayer, switchPlayer, play, newRound, getWinner, end };
+  return { start, getCurrentPlayer, switchPlayer, newRound, getWinner, end };
 })();
 
 const displayController = (function () {
@@ -208,6 +186,7 @@ const displayController = (function () {
   });
 
   btnStartGame.addEventListener("click", () => {
+    console.log("btnStartGame");
     const name1 = getPlayer1Name();
     const name2 = getPlayer2Name();
     if (name1 != null && name2 != null) {
@@ -220,6 +199,7 @@ const displayController = (function () {
   });
 
   btnNextRound.addEventListener("click", () => {
+    console.log("btnNextRound");
     game.newRound();
     clearBoard();
     showStatus(`${game.getCurrentPlayer().name}'s turn`);
@@ -227,6 +207,7 @@ const displayController = (function () {
   })
 
   function checkInput(e) {
+    console.log("checkInput");
     const targetId = e.target.id;
     let valid = false;
     if (targetId === "btnPlayer1") {
@@ -307,6 +288,5 @@ const displayController = (function () {
   function showStatus(message) {
     gameInfo.textContent = message;
   }
-
   return { clearBoard, showStatus };
 })();
