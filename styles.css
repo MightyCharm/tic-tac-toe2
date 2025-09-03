@@ -13,6 +13,7 @@ body {
     display: grid;
     grid-template-areas:
         "header header header"
+        "gameStats gameStats gameStats"
         "controls controls controls"
         "player1 board player2"
         "info info info";
@@ -44,6 +45,17 @@ body {
 .divHeader {
     grid-area: header;
 }
+
+.divGameStats {
+    grid-area: gameStats;
+    text-align: center;
+}
+
+.playerScore {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
 
 .divPlayer1 {
     grid-area: player1;

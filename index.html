@@ -8,9 +8,15 @@
   </head>
   <body>
     <div class="container">
-
       <div class="divHeader">
         <h1>TIC TAC TOE</h1>
+      </div>
+
+      <div class="divGameStats">
+        <p class="playerScore">
+          <span id="player1Score">0</span>:<span id="player2Score">0</span>
+        </p>
+        <p>Round: <span id="rounds">0</span></p>
       </div>
 
       <div class="divControls">
@@ -20,7 +26,7 @@
 
       <div class="divPlayer1">
         <h2>Player 1</h2>
-        <input id="inputPlayer1"/>
+        <input id="inputPlayer1" />
         <button id="btnPlayer1">Enter</button>
       </div>
 
@@ -40,14 +46,13 @@
 
       <div class="divPlayer2">
         <h2>Player 2</h2>
-        <input id="inputPlayer2"/>
+        <input id="inputPlayer2" />
         <button id="btnPlayer2">Enter</button>
       </div>
 
       <div class="divGameInfo">
         <p>Please Enter Name</p>
       </div>
-
     </div>
 
     <script src="./script.js"></script>
