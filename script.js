@@ -42,6 +42,7 @@ const game = (function () {
   let player1, player2, currentPlayer;
   let gameOver = false;
   let lastStarter = null;
+  let round = 0;
 
   function start(player1Name, player2Name) {
     gameboard.clear();
@@ -50,6 +51,7 @@ const game = (function () {
     player2 = createPlayer(player2Name, "O");
     currentPlayer = player1;
     lastStarter = player1;
+    incrementRound();
   }
 
   function getCurrentPlayer() {
@@ -62,6 +64,7 @@ const game = (function () {
 
   function newRound() {
     gameboard.clear();
+    incrementRound();
     currentPlayer = lastStarter === player1 ? player2 : player1; // new
     lastStarter = currentPlayer; // new
     gameOver = false;
@@ -129,7 +132,7 @@ const game = (function () {
 
   function end(winner) {
     console.log("winner:", winner);
-    gameboard.displayBoard();
+    // gameboard.displayBoard();
     if (winner === "draw") {
       displayController.showStatus("No space left on the board. DRAW!");
       return;
@@ -146,7 +149,19 @@ const game = (function () {
   function setGameOver() {
     gameOver = true;
   }
-  return { start, getCurrentPlayer, switchPlayer, newRound, getWinner, end, isGameOver, setGameOver };
+
+  function resetRounds() {
+    round = 0;
+  }
+
+  function incrementRound() {
+    round++;
+  }
+
+  function getRound() {
+    return round;
+  }
+  return { start, getCurrentPlayer, switchPlayer, newRound, getWinner, end, isGameOver, setGameOver, getRound };
 })();
 
 const displayController = (function () {
@@ -159,6 +174,8 @@ const displayController = (function () {
   const gameInfo = document.querySelector(".divGameInfo");
   const btnStartGame = document.querySelector("#btnStartGame");
   const btnNextRound = document.querySelector("#btnNextRound");
+
+  const rounds = document.querySelector("#rounds");
 
   let player1Name = null;
   let player2Name = null;
@@ -176,6 +193,7 @@ const displayController = (function () {
     const name2 = getPlayer2Name();
     if (name1 != null && name2 != null) {
       game.start(name1, name2);
+      displayRound(game.getRound()); // new
       showStatus(`${game.getCurrentPlayer().name}'s turn`);
       btnStartGame.classList.add("hidden");
     } else {
@@ -186,6 +204,7 @@ const displayController = (function () {
   btnNextRound.addEventListener("click", () => {
     game.newRound();
     clearBoard();
+    displayRound(game.getRound()); // new
     showStatus(`${game.getCurrentPlayer().name}'s turn`);
     btnNextRound.classList.add("hidden");
   });
@@ -276,5 +295,9 @@ const displayController = (function () {
   function showStatus(message) {
     gameInfo.textContent = message;
   }
-  return { clearBoard, showStatus };
+
+  function displayRound(round) {
+    rounds.textContent = round;
+  }
+  return { clearBoard, showStatus, displayRound };
 })();
