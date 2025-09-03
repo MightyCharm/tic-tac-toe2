@@ -12,10 +12,22 @@
         <h1>TIC TAC TOE</h1>
       </div>
 
-      <div class="divGameStats">
-        <p class="playerScore">
-          <span id="player1Score">0</span>:<span id="player2Score">0</span>
-        </p>
+      <div class="scoreboard">
+        <div class="score-column">
+          <p class="score-label">P1</p>
+          <p id="score-player1">0</p>
+        </div>
+        <div class="score-column">
+          <p class="score-label">Draw</p>
+          <p id="score-draw">0</p>
+        </div>
+        <div class="score-column">
+          <p class="score-label">P2</p>
+          <p id="score-player2">0</p>
+        </div>
+      </div>
+
+      <div class="divRounds">
         <p>Round: <span id="rounds">0</span></p>
       </div>
 
