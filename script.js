@@ -43,6 +43,7 @@ const game = (function () {
   let gameOver = false;
   let lastStarter = null;
   let round = 0;
+  const score = { player1: 0, player2: 0, draw: 0 };
 
   function start(player1Name, player2Name) {
     gameboard.clear();
@@ -65,8 +66,8 @@ const game = (function () {
   function newRound() {
     gameboard.clear();
     incrementRound();
-    currentPlayer = lastStarter === player1 ? player2 : player1; // new
-    lastStarter = currentPlayer; // new
+    currentPlayer = lastStarter === player1 ? player2 : player1;
+    lastStarter = currentPlayer;
     gameOver = false;
   }
 
@@ -131,12 +132,12 @@ const game = (function () {
   }
 
   function end(winner) {
-    console.log("winner:", winner);
     // gameboard.displayBoard();
     if (winner === "draw") {
       displayController.showStatus("No space left on the board. DRAW!");
       return;
     }
+
     displayController.showStatus(
       `Winner is: ${winner === "X" ? player1.name : player2.name} "${winner}"`
     );
@@ -161,7 +162,34 @@ const game = (function () {
   function getRound() {
     return round;
   }
-  return { start, getCurrentPlayer, switchPlayer, newRound, getWinner, end, isGameOver, setGameOver, getRound };
+
+  function setScore(winner) {
+    if (winner === "X") {
+      score.player1++;
+    } else if (winner === "O") {
+      score.player2++;
+    } else {
+      score.draw++;
+    }
+  }
+
+  function getScore() {
+    return { ...score };
+  }
+
+  return {
+    start,
+    getCurrentPlayer,
+    switchPlayer,
+    newRound,
+    getWinner,
+    end,
+    isGameOver,
+    setGameOver,
+    getRound,
+    setScore,
+    getScore,
+  };
 })();
 
 const displayController = (function () {
@@ -174,6 +202,9 @@ const displayController = (function () {
   const gameInfo = document.querySelector(".game-info");
   const btnStartGame = document.querySelector("#btn-start-game");
   const btnNextRound = document.querySelector("#btn-next-round");
+  const scorePlayer1 = document.querySelector("#score-player-1");
+  const scoreDraw = document.querySelector("#score-draw");
+  const scorePlayer2 = document.querySelector("#score-player-2");
 
   const rounds = document.querySelector("#rounds");
 
@@ -237,8 +268,8 @@ const displayController = (function () {
   function checkBoard(e) {
     const cell = e.target;
     if (!cell.classList.contains("cell")) return;
-    console.log("game.isGameOver(): ",game.isGameOver());
-    if(game.isGameOver()) return;
+    console.log("game.isGameOver(): ", game.isGameOver());
+    if (game.isGameOver()) return;
 
     const row = cell.dataset.row;
     const col = cell.dataset.col;
@@ -253,6 +284,8 @@ const displayController = (function () {
       if (winner) {
         game.setGameOver();
         game.end(winner);
+        game.setScore(winner);
+        displayScore();
         btnNextRound.classList.remove("hidden");
       } else {
         showStatus(`${game.getCurrentPlayer().name}'s turn`);
@@ -299,5 +332,12 @@ const displayController = (function () {
   function displayRound(round) {
     rounds.textContent = round;
   }
-  return { clearBoard, showStatus, displayRound };
+
+  function displayScore() {
+    const score = game.getScore();
+    scorePlayer1.textContent = score.player1;
+    scoreDraw.textContent = score.draw;
+    scorePlayer2.textContent = score.player2;
+  }
+  return { clearBoard, showStatus, displayRound, displayScore };
 })();
