@@ -167,13 +167,13 @@ const game = (function () {
 const displayController = (function () {
   const board = document.querySelector("#board");
   const cells = document.querySelectorAll(".cell");
-  const inputPlayer1 = document.querySelector("#inputPlayer1");
-  const btnPlayer1 = document.querySelector("#btnPlayer1");
-  const inputPlayer2 = document.querySelector("#inputPlayer2");
-  const btnPlayer2 = document.querySelector("#btnPlayer2");
-  const gameInfo = document.querySelector(".divGameInfo");
-  const btnStartGame = document.querySelector("#btnStartGame");
-  const btnNextRound = document.querySelector("#btnNextRound");
+  const inputPlayer1 = document.querySelector("#input-player-1");
+  const btnPlayer1 = document.querySelector("#btn-player-1");
+  const inputPlayer2 = document.querySelector("#input-player-2");
+  const btnPlayer2 = document.querySelector("#btn-player-2");
+  const gameInfo = document.querySelector(".game-info");
+  const btnStartGame = document.querySelector("#btn-start-game");
+  const btnNextRound = document.querySelector("#btn-next-round");
 
   const rounds = document.querySelector("#rounds");
 
@@ -212,7 +212,7 @@ const displayController = (function () {
   function checkInput(e) {
     const targetId = e.target.id;
     let valid = false;
-    if (targetId === "btnPlayer1") {
+    if (targetId === "btn-player-1") {
       const value = inputPlayer1.value.trim();
       if (value) {
         if (setPlayer1Name(value)) {
@@ -222,7 +222,7 @@ const displayController = (function () {
         }
       }
     }
-    if (targetId === "btnPlayer2") {
+    if (targetId === "btn-player-2") {
       const value = inputPlayer2.value.trim();
       if (value) {
         if (setPlayer2Name(value)) {

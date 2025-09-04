@@ -8,41 +8,41 @@
   </head>
   <body>
     <div class="container">
-      <div class="divHeader">
+      <div class="header">
         <h1>TIC TAC TOE</h1>
+      </div>
+
+      <div class="game-controls">
+        <button id="btn-start-game">Start Game</button>
+        <button id="btn-next-round" class="hidden">Next Round</button>
       </div>
 
       <div class="scoreboard">
         <div class="score-column">
-          <p class="score-label">P1</p>
-          <p id="score-player1">0</p>
+          <p class="score-label score-label-player-1">P1</p>
+          <p id="score-player-1" class="score">0</p>
         </div>
         <div class="score-column">
-          <p class="score-label">Draw</p>
-          <p id="score-draw">0</p>
+          <p class="score-label score-label-draw">Draw</p>
+          <p id="score-draw" class="score">0</p>
         </div>
         <div class="score-column">
-          <p class="score-label">P2</p>
-          <p id="score-player2">0</p>
+          <p class="score-label score-label-player-2">P2</p>
+          <p id="score-player-2" class="score">0</p>
         </div>
       </div>
 
-      <div class="divRounds">
+      <div class="round-counter">
         <p>Round: <span id="rounds">0</span></p>
       </div>
 
-      <div class="divControls">
-        <button id="btnStartGame">Start Game</button>
-        <button id="btnNextRound" class="hidden">Next Round</button>
+      <div class="player-form-1">
+        <h2 class="player-form-header">Player 1</h2>
+        <input id="input-player-1" class="player-form-input"/>
+        <button id="btn-player-1" class="player-form-button">Enter</button>
       </div>
 
-      <div class="divPlayer1">
-        <h2>Player 1</h2>
-        <input id="inputPlayer1" />
-        <button id="btnPlayer1">Enter</button>
-      </div>
-
-      <div id="board" class="divBoard">
+      <div id="board" class="game-board">
         <div class="cell" data-row="0" data-col="0"></div>
         <div class="cell" data-row="0" data-col="1"></div>
         <div class="cell" data-row="0" data-col="2"></div>
@@ -56,13 +56,13 @@
         <div class="cell" data-row="2" data-col="2"></div>
       </div>
 
-      <div class="divPlayer2">
-        <h2>Player 2</h2>
-        <input id="inputPlayer2" />
-        <button id="btnPlayer2">Enter</button>
+      <div class="player-form-2">
+        <h2 class="player-form-header">Player 2</h2>
+        <input id="input-player-2" class="player-form-input"/>
+        <button id="btn-player-2" class="player-form-button">Enter</button>
       </div>
 
-      <div class="divGameInfo">
+      <div class="game-info">
         <p>Please Enter Name</p>
       </div>
     </div>
