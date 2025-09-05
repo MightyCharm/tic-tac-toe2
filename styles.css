@@ -169,3 +169,8 @@ body {
 .hidden {
   display: none;
 }
+
+.btn {
+  min-width: 80px;
+  padding: 0.2rem;
+}

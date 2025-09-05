@@ -151,6 +151,10 @@ const game = (function () {
     gameOver = true;
   }
 
+  function resetGameOver() {
+    gameOver = false;
+  }
+
   function resetRounds() {
     round = 0;
   }
@@ -177,6 +181,24 @@ const game = (function () {
     return { ...score };
   }
 
+  function resetScore() {
+    score.player1 = 0;
+    score.player2 = 0;
+    score.draw = 0;
+  }
+
+  function resetLastStarter() {
+    lastStarter = null;
+  }
+
+  function resetGame() {
+    resetScore();
+    resetRounds();
+    resetGameOver();
+    resetLastStarter();
+    gameboard.clear();
+  }
+
   return {
     start,
     getCurrentPlayer,
@@ -189,6 +211,7 @@ const game = (function () {
     getRound,
     setScore,
     getScore,
+    resetGame,
   };
 })();
 
@@ -202,6 +225,7 @@ const displayController = (function () {
   const gameInfo = document.querySelector(".game-info");
   const btnStartGame = document.querySelector("#btn-start-game");
   const btnNextRound = document.querySelector("#btn-next-round");
+  const btnResetGame = document.querySelector("#btn-restart-game");
   const scorePlayer1 = document.querySelector("#score-player-1");
   const scoreDraw = document.querySelector("#score-draw");
   const scorePlayer2 = document.querySelector("#score-player-2");
@@ -238,6 +262,12 @@ const displayController = (function () {
     displayRound(game.getRound()); // new
     showStatus(`${game.getCurrentPlayer().name}'s turn`);
     btnNextRound.classList.add("hidden");
+    btnResetGame.classList.add("hidden");
+  });
+
+  btnResetGame.addEventListener("click", () => {
+    game.resetGame();
+    resetUI();
   });
 
   function checkInput(e) {
@@ -287,6 +317,7 @@ const displayController = (function () {
         game.setScore(winner);
         displayScore();
         btnNextRound.classList.remove("hidden");
+        btnResetGame.classList.remove("hidden");
       } else {
         showStatus(`${game.getCurrentPlayer().name}'s turn`);
       }
@@ -339,5 +370,28 @@ const displayController = (function () {
     scoreDraw.textContent = score.draw;
     scorePlayer2.textContent = score.player2;
   }
-  return { clearBoard, showStatus, displayRound, displayScore };
+
+  function resetUI() {
+    clearBoard();
+    displayScore();
+    displayRound(game.getRound());
+    btnResetGame.classList.add("hidden");
+    btnNextRound.classList.add("hidden");
+    btnStartGame.classList.remove("hidden");
+    inputPlayer1.disabled = false;
+    btnPlayer1.disabled = false;
+    inputPlayer2.disabled = false;
+    btnPlayer2.disabled = false;
+    inputPlayer1.value = "";
+    inputPlayer2.value = "";
+    resetPlayerNames();
+    showStatus("Please enter both names to start the game.");
+  }
+
+  function resetPlayerNames() {
+    player1Name = null;
+    player2Name = null;
+  }
+
+  return { clearBoard, showStatus, displayRound, displayScore, resetUI };
 })();
