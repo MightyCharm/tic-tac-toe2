@@ -40,7 +40,7 @@ function createPlayer(name, sign) {
 
 const game = (function () {
   let player1, player2, currentPlayer;
-  let gameOver = false;
+  let isRoundOver = false;
   let lastStarter = null;
   let round = 0;
   const score = { player1: 0, player2: 0, draw: 0 };
@@ -70,10 +70,10 @@ const game = (function () {
     incrementRound();
     currentPlayer = lastStarter === player1 ? player2 : player1;
     lastStarter = currentPlayer;
-    gameOver = false;
+    isRoundOver = false;
   }
 
-  function getWinner() {
+  function checkForWinner() {
     const board = gameboard.getBoard();
     const pattern = [
       [
@@ -133,8 +133,7 @@ const game = (function () {
     return null;
   }
 
-  function end(winner) {
-    // gameboard.displayBoard();
+  function announceRoundResult(winner) {
     if (winner === "draw") {
       displayController.showStatus("No space left on the board. DRAW!");
       return;
@@ -151,16 +150,16 @@ const game = (function () {
     );
   }
 
-  function isGameOver() {
-    return gameOver;
+  function hasRoundEnded() {
+    return isRoundOver;
   }
 
-  function setGameOver() {
-    gameOver = true;
+  function setRoundOver() {
+    isRoundOver = true;
   }
 
-  function resetGameOver() {
-    gameOver = false;
+  function resetRoundOver() {
+    isRoundOver = false;
   }
 
   function resetRounds() {
@@ -202,7 +201,7 @@ const game = (function () {
   function resetGame() {
     resetScore();
     resetRounds();
-    resetGameOver();
+    resetRoundOver();
     resetLastStarter();
     gameboard.clear();
   }
@@ -232,10 +231,10 @@ const game = (function () {
     getCurrentPlayer,
     switchPlayer,
     newRound,
-    getWinner,
-    end,
-    isGameOver,
-    setGameOver,
+    checkForWinner,
+    announceRoundResult,
+    hasRoundEnded,
+    setRoundOver,
     getRound,
     setScore,
     getScore,
@@ -330,8 +329,7 @@ const displayController = (function () {
   function checkBoard(e) {
     const cell = e.target;
     if (!cell.classList.contains("cell")) return;
-    console.log("game.isGameOver(): ", game.isGameOver());
-    if (game.isGameOver()) return;
+    if (game.hasRoundEnded()) return;
 
     const row = cell.dataset.row;
     const col = cell.dataset.col;
@@ -342,12 +340,12 @@ const displayController = (function () {
     if (success) {
       cell.textContent = player.sign;
       game.switchPlayer();
-      const winnerRound = game.getWinner();
+      const winnerRound = game.checkForWinner();
       if (winnerRound) {
-        game.setGameOver();
+        game.setRoundOver();
         game.setScore(winnerRound);
         displayScore();
-        game.end(winnerRound);
+        game.announceRoundResult(winnerRound);
 
         if (game.matchWon()) {
           game.wonGame(winnerRound);
