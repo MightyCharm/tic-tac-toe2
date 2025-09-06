@@ -53,7 +53,7 @@ const game = (function () {
     player2 = createPlayer(player2Name, "O");
     currentPlayer = player1;
     lastStarter = player1;
-    setWinningCondition(win)
+    setWinningCondition(win);
     incrementRound();
   }
 
@@ -145,6 +145,12 @@ const game = (function () {
     );
   }
 
+  function wonGame(winner) {
+     displayController.showStatus(
+      `Game Over! ${winner === "X" ? player1.name : player2.name} "${winner}" won the game`
+    );
+  }
+
   function isGameOver() {
     return gameOver;
   }
@@ -209,6 +215,18 @@ const game = (function () {
     return winningCondition;
   }
 
+  function matchWon() {
+    console.log("check if winning condition was reached, return true false");
+    const winCondition = getWinningCondition();
+    const scores = getScore();
+    const score1 = scores.player1;
+    const score2 = scores.player2;
+    if(score1 === winCondition || score2 === winCondition) {
+      return true;
+    }
+    return false;
+  }
+
   return {
     start,
     getCurrentPlayer,
@@ -223,6 +241,8 @@ const game = (function () {
     getScore,
     resetGame,
     getWinningCondition,
+    matchWon,
+    wonGame,
   };
 })();
 
@@ -322,14 +342,20 @@ const displayController = (function () {
     if (success) {
       cell.textContent = player.sign;
       game.switchPlayer();
-      const winner = game.getWinner();
-      if (winner) {
+      const winnerRound = game.getWinner();
+      if (winnerRound) {
         game.setGameOver();
-        game.end(winner);
-        game.setScore(winner);
+        game.setScore(winnerRound);
         displayScore();
-        btnNextRound.classList.remove("hidden");
-        btnResetGame.classList.remove("hidden");
+        game.end(winnerRound);
+
+        if (game.matchWon()) {
+          game.wonGame(winnerRound);
+          btnResetGame.classList.remove("hidden");
+        } else {
+          btnNextRound.classList.remove("hidden");
+          btnResetGame.classList.remove("hidden");
+        }
       } else {
         showStatus(`${game.getCurrentPlayer().name}'s turn`);
       }
