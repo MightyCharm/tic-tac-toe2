@@ -16,6 +16,7 @@ body {
     "controls controls controls"
     "scoreboard scoreboard scoreboard"
     "round round round"
+    "win-condition win-condition win-condition"
     "player1 board player2"
     "info info info";
 
@@ -91,6 +92,21 @@ body {
 .game-controls {
   grid-area: controls;
   min-height: 30px;
+}
+
+ .win-condition {
+  grid-area: win-condition;
+
+  display: flex;
+  column-gap: 1rem;
+ }
+
+.score-label-input {
+  color: #e2e8f0;
+}
+
+.score-input {
+  width: 30px;
 }
 
 .player-form-1,
