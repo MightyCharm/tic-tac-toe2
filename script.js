@@ -375,17 +375,22 @@ const displayController = (function () {
     clearBoard();
     displayScore();
     displayRound(game.getRound());
+    resetPlayerInputs();
+    resetPlayerNames();
     btnResetGame.classList.add("hidden");
     btnNextRound.classList.add("hidden");
     btnStartGame.classList.remove("hidden");
+    showStatus("Please enter both names to start the game.");
+  }
+
+  function resetPlayerInputs() {
     inputPlayer1.disabled = false;
-    btnPlayer1.disabled = false;
     inputPlayer2.disabled = false;
+    btnPlayer1.disabled = false;
     btnPlayer2.disabled = false;
+
     inputPlayer1.value = "";
     inputPlayer2.value = "";
-    resetPlayerNames();
-    showStatus("Please enter both names to start the game.");
   }
 
   function resetPlayerNames() {
