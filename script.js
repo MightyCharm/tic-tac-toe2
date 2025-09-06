@@ -133,15 +133,13 @@ const game = (function () {
     return null;
   }
 
-  function announceRoundResult(winner) {
+  function getRoundResultMessage(winner) {
     if (winner === "draw") {
-      displayController.showStatus("No space left on the board. DRAW!");
-      return;
+      return "No space left on the board. DRAW!";
     }
 
-    displayController.showStatus(
-      `Winner is: ${winner === "X" ? player1.name : player2.name} "${winner}"`
-    );
+    return `Winner is: ${winner === "X" ? player1.name : player2.name} "${winner}"`;
+    
   }
 
   function wonGame(winner) {
@@ -232,7 +230,7 @@ const game = (function () {
     switchPlayer,
     newRound,
     checkForWinner,
-    announceRoundResult,
+    getRoundResultMessage,
     hasRoundEnded,
     setRoundOver,
     getRound,
@@ -345,7 +343,7 @@ const displayController = (function () {
         game.setRoundOver();
         game.setScore(winnerRound);
         displayScore();
-        game.announceRoundResult(winnerRound);
+        showStatus(game.getRoundResultMessage(winnerRound));
 
         if (game.matchWon()) {
           game.wonGame(winnerRound);
