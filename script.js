@@ -44,14 +44,16 @@ const game = (function () {
   let lastStarter = null;
   let round = 0;
   const score = { player1: 0, player2: 0, draw: 0 };
+  let winningCondition = null;
 
-  function start(player1Name, player2Name) {
+  function start(player1Name, player2Name, win) {
     gameboard.clear();
     displayController.clearBoard();
     player1 = createPlayer(player1Name, "X");
     player2 = createPlayer(player2Name, "O");
     currentPlayer = player1;
     lastStarter = player1;
+    setWinningCondition(win)
     incrementRound();
   }
 
@@ -199,6 +201,14 @@ const game = (function () {
     gameboard.clear();
   }
 
+  function setWinningCondition(win) {
+    winningCondition = win;
+  }
+
+  function getWinningCondition() {
+    return winningCondition;
+  }
+
   return {
     start,
     getCurrentPlayer,
@@ -212,6 +222,7 @@ const game = (function () {
     setScore,
     getScore,
     resetGame,
+    getWinningCondition,
   };
 })();
 
@@ -229,8 +240,8 @@ const displayController = (function () {
   const scorePlayer1 = document.querySelector("#score-player-1");
   const scoreDraw = document.querySelector("#score-draw");
   const scorePlayer2 = document.querySelector("#score-player-2");
-
   const rounds = document.querySelector("#rounds");
+  const scoreWin = document.querySelector("#score-win");
 
   let player1Name = null;
   let player2Name = null;
@@ -247,7 +258,8 @@ const displayController = (function () {
     const name1 = getPlayer1Name();
     const name2 = getPlayer2Name();
     if (name1 != null && name2 != null) {
-      game.start(name1, name2);
+      const conditionToWin = parseInt(scoreWin.value) || 3;
+      game.start(name1, name2, conditionToWin);
       displayRound(game.getRound()); // new
       showStatus(`${game.getCurrentPlayer().name}'s turn`);
       btnStartGame.classList.add("hidden");
