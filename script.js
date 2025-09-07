@@ -137,12 +137,16 @@ const game = (function () {
     if (winner === "draw") {
       return "No space left on the board. DRAW!";
     }
-    return `Winner is: ${winner === "X" ? player1.name : player2.name} "${winner}"`;
+    return `Winner is: ${
+      winner === "X" ? player1.name : player2.name
+    } "${winner}"`;
   }
 
   function wonGame(winner) {
-     displayController.showStatus(
-      `Game Over! ${winner === "X" ? player1.name : player2.name} "${winner}" won the game`
+    displayController.showStatus(
+      `Game Over! ${
+        winner === "X" ? player1.name : player2.name
+      } "${winner}" won the game`
     );
   }
 
@@ -211,12 +215,11 @@ const game = (function () {
   }
 
   function matchWon() {
-    console.log("check if winning condition was reached, return true false");
     const winCondition = getWinningCondition();
     const scores = getScore();
     const score1 = scores.player1;
     const score2 = scores.player2;
-    if(score1 === winCondition || score2 === winCondition) {
+    if (score1 === winCondition || score2 === winCondition) {
       return true;
     }
     return false;
@@ -245,9 +248,7 @@ const displayController = (function () {
   const board = document.querySelector("#board");
   const cells = document.querySelectorAll(".cell");
   const inputPlayer1 = document.querySelector("#input-player-1");
-  const btnPlayer1 = document.querySelector("#btn-player-1");
   const inputPlayer2 = document.querySelector("#input-player-2");
-  const btnPlayer2 = document.querySelector("#btn-player-2");
   const gameInfo = document.querySelector(".game-info");
   const btnStartGame = document.querySelector("#btn-start-game");
   const btnNextRound = document.querySelector("#btn-next-round");
@@ -258,26 +259,20 @@ const displayController = (function () {
   const rounds = document.querySelector("#rounds");
   const scoreWin = document.querySelector("#score-win");
 
-  let player1Name = null;
-  let player2Name = null;
-
-  btnPlayer1.addEventListener("click", (e) => checkInput(e));
-
-  btnPlayer2.addEventListener("click", (e) => checkInput(e));
-
   board.addEventListener("click", (e) => {
     checkBoard(e);
   });
 
   btnStartGame.addEventListener("click", () => {
-    const name1 = getPlayer1Name();
-    const name2 = getPlayer2Name();
-    if (name1 != null && name2 != null) {
+    const name1 = inputPlayer1.value.trim();
+    const name2 = inputPlayer2.value.trim();
+    if (name1 != "" && name2 != "") {
       const conditionToWin = parseInt(scoreWin.value) || 3;
       game.start(name1, name2, conditionToWin);
       displayRound(game.getRound()); // new
       showStatus(`${game.getCurrentPlayer().name}'s turn`);
       btnStartGame.classList.add("hidden");
+      disableInputs();
     } else {
       showStatus("Please enter both names to start the game.");
     }
@@ -297,30 +292,6 @@ const displayController = (function () {
     resetUI();
   });
 
-  function checkInput(e) {
-    const targetId = e.target.id;
-    let valid = false;
-    if (targetId === "btn-player-1") {
-      const value = inputPlayer1.value.trim();
-      if (value) {
-        if (setPlayer1Name(value)) {
-          inputPlayer1.disabled = true;
-          btnPlayer1.disabled = true;
-          valid = true;
-        }
-      }
-    }
-    if (targetId === "btn-player-2") {
-      const value = inputPlayer2.value.trim();
-      if (value) {
-        if (setPlayer2Name(value)) {
-          inputPlayer2.disabled = true;
-          btnPlayer2.disabled = true;
-          valid = true;
-        }
-      }
-    }
-  }
 
   function checkBoard(e) {
     const cell = e.target;
@@ -346,6 +317,7 @@ const displayController = (function () {
         if (game.matchWon()) {
           game.wonGame(winnerRound);
           btnResetGame.classList.remove("hidden");
+          enableInputs();
         } else {
           btnNextRound.classList.remove("hidden");
         }
@@ -361,31 +333,6 @@ const displayController = (function () {
     });
   }
 
-  function getPlayer1Name() {
-    return player1Name;
-  }
-
-  function getPlayer2Name() {
-    return player2Name;
-  }
-
-  function setPlayer1Name(input) {
-    const value = input.trim();
-    if (value) {
-      player1Name = value;
-      return true;
-    }
-    return false;
-  }
-
-  function setPlayer2Name(input) {
-    const value = input.trim();
-    if (value) {
-      player2Name = value;
-      return true;
-    }
-    return false;
-  }
 
   function showStatus(message) {
     gameInfo.textContent = message;
@@ -407,7 +354,6 @@ const displayController = (function () {
     displayScore();
     displayRound(game.getRound());
     resetPlayerInputs();
-    resetPlayerNames();
     btnResetGame.classList.add("hidden");
     btnNextRound.classList.add("hidden");
     btnStartGame.classList.remove("hidden");
@@ -415,18 +361,18 @@ const displayController = (function () {
   }
 
   function resetPlayerInputs() {
-    inputPlayer1.disabled = false;
-    inputPlayer2.disabled = false;
-    btnPlayer1.disabled = false;
-    btnPlayer2.disabled = false;
-
     inputPlayer1.value = "";
     inputPlayer2.value = "";
   }
 
-  function resetPlayerNames() {
-    player1Name = null;
-    player2Name = null;
+  function enableInputs() {
+    inputPlayer1.disabled = false;
+    inputPlayer2.disabled = false;
+  }
+
+  function disableInputs() {
+    inputPlayer1.disabled = true;
+    inputPlayer2.disabled = true;
   }
 
   return { clearBoard, showStatus, displayRound, displayScore, resetUI };
