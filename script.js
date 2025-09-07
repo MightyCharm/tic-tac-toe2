@@ -348,7 +348,6 @@ const displayController = (function () {
           btnResetGame.classList.remove("hidden");
         } else {
           btnNextRound.classList.remove("hidden");
-          btnResetGame.classList.remove("hidden");
         }
       } else {
         showStatus(`${game.getCurrentPlayer().name}'s turn`);
