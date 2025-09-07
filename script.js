@@ -117,14 +117,13 @@ const game = (function () {
         [2, 0],
       ], // cross2
     ];
-    // check rows
     for (let i = 0; i < pattern.length; i++) {
       const [a, b, c] = pattern[i];
       const cellA = board[a[0]][a[1]];
       const cellB = board[b[0]][b[1]];
       const cellC = board[c[0]][c[1]];
       if (cellA != "" && cellA === cellB && cellB === cellC) {
-        return cellA;
+        return {winner: cellA, pattern: [a, b, c]};
       }
     }
     const full = board.every((row) => row.every((cell) => cell != ""));
@@ -292,8 +291,49 @@ const displayController = (function () {
     resetUI();
   });
 
-
   function checkBoard(e) {
+    const cell = e.target;
+    if (!cell.classList.contains("cell")) return;
+    if (game.hasRoundEnded()) return;
+
+    const row = cell.dataset.row;
+    const col = cell.dataset.col;
+
+    const player = game.getCurrentPlayer();
+    if (!player) return;
+    const success = gameboard.setCell(row, col, player);
+    if (success) {
+      cell.textContent = player.sign;
+      game.switchPlayer();
+      const winnerRound = game.checkForWinner();
+      if(winnerRound === null) {
+        showStatus(`${game.getCurrentPlayer().name}'s turn`);
+      }
+      else if(winnerRound === "draw") {
+        game.setRoundOver();
+        game.setScore(winnerRound);
+        displayScore();
+        showStatus(game.getRoundResultMessage(winnerRound));
+        btnNextRound.classList.remove("hidden");
+      } else {
+        game.setRoundOver();
+        game.setScore(winnerRound.winner);
+        displayScore();
+        showStatus(game.getRoundResultMessage(winnerRound.winner));
+        if (game.matchWon()) {
+          game.wonGame(winnerRound.winner);
+          btnResetGame.classList.remove("hidden");
+          highlightWinningCells(winnerRound.pattern);
+          enableInputs();
+
+        } else {
+          btnNextRound.classList.remove("hidden");
+        }
+      } 
+    }
+  }
+
+  function checkBoard1(e) {
     const cell = e.target;
     if (!cell.classList.contains("cell")) return;
     if (game.hasRoundEnded()) return;
@@ -350,6 +390,7 @@ const displayController = (function () {
   }
 
   function resetUI() {
+    removeHighlightWinningCells();
     clearBoard();
     displayScore();
     displayRound(game.getRound());
@@ -373,6 +414,24 @@ const displayController = (function () {
   function disableInputs() {
     inputPlayer1.disabled = true;
     inputPlayer2.disabled = true;
+  }
+
+  function highlightWinningCells(pattern) {
+    cells.forEach( (cell) => {
+      const row = Number(cell.dataset.row);
+      const col = Number(cell.dataset.col);
+      for(let i=0; i < pattern.length; i++) {
+        if(row === pattern[i][0] && col === pattern[i][1]) {
+          cell.classList.add("highlight");
+        }
+      }
+    })
+  }
+
+  function removeHighlightWinningCells() {
+    cells.forEach( (cell) => {
+      cell.classList.remove("highlight");
+    })
   }
 
   return { clearBoard, showStatus, displayRound, displayScore, resetUI };

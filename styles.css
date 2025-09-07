@@ -179,3 +179,7 @@ body {
   min-width: 80px;
   padding: 0.2rem;
 }
+
+.highlight {
+  background-color: yellow;
+}
