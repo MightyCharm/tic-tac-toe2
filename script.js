@@ -51,7 +51,7 @@ const game = (function () {
   }
 
   function getPlayers() {
-    return [player1, player2]
+    return [player1, player2];
   }
 
   function getCurrentPlayer() {
@@ -120,7 +120,7 @@ const game = (function () {
       const cellB = board[b[0]][b[1]];
       const cellC = board[c[0]][c[1]];
       if (cellA != "" && cellA === cellB && cellB === cellC) {
-        return {winner: cellA, pattern: [a, b, c]};
+        return { winner: cellA, pattern: [a, b, c] };
       }
     }
     const full = board.every((row) => row.every((cell) => cell != ""));
@@ -257,6 +257,7 @@ const displayController = (function () {
   });
 
   btnNextRound.addEventListener("click", () => {
+    removeHighlightWinningCells();
     game.newRound();
     clearBoardCells();
     displayRound(game.getRound()); // new
@@ -285,10 +286,9 @@ const displayController = (function () {
       cell.textContent = player.sign;
       game.switchPlayer();
       const winnerRound = game.getRoundResult();
-      if(winnerRound === null) {
+      if (winnerRound === null) {
         displayMessage(`${game.getCurrentPlayer().name}'s turn`);
-      }
-      else if(winnerRound === "draw") {
+      } else if (winnerRound === "draw") {
         game.setRoundOver();
         game.updateScore(winnerRound);
         displayScore();
@@ -299,16 +299,15 @@ const displayController = (function () {
         game.updateScore(winnerRound.winner);
         displayScore();
         displayMessage(formatResultMessage(winnerRound.winner));
+        highlightWinningCells(winnerRound.pattern);
         if (game.matchWon()) {
           displayGameOver(winnerRound.winner);
           btnResetGame.classList.remove("hidden");
-          highlightWinningCells(winnerRound.pattern);
           enableInputs();
-
         } else {
           btnNextRound.classList.remove("hidden");
         }
-      } 
+      }
     }
   }
 
@@ -375,22 +374,28 @@ const displayController = (function () {
   }
 
   function highlightWinningCells(pattern) {
-    cells.forEach( (cell) => {
+    cells.forEach((cell) => {
       const row = Number(cell.dataset.row);
       const col = Number(cell.dataset.col);
-      for(let i=0; i < pattern.length; i++) {
-        if(row === pattern[i][0] && col === pattern[i][1]) {
+      for (let i = 0; i < pattern.length; i++) {
+        if (row === pattern[i][0] && col === pattern[i][1]) {
           cell.classList.add("highlight");
         }
       }
-    })
+    });
   }
 
   function removeHighlightWinningCells() {
-    cells.forEach( (cell) => {
+    cells.forEach((cell) => {
       cell.classList.remove("highlight");
-    })
+    });
   }
 
-  return { clearBoardCells, displayMessage, displayRound, displayScore, resetUI };
+  return {
+    clearBoardCells,
+    displayMessage,
+    displayRound,
+    displayScore,
+    resetUI,
+  };
 })();
