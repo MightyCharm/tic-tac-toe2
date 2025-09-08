@@ -11,13 +11,6 @@ const gameboard = (function () {
     return board.map((row) => row.slice());
   }
 
-  function displayBoard() {
-    const board = gameboard.getBoard();
-    for (let i = 0; i < board.length; i++) {
-      console.log(board[i]);
-    }
-  }
-
   function setCell(row, column, player) {
     if (board[row][column] === "") {
       board[row][column] = player.sign;
@@ -31,7 +24,7 @@ const gameboard = (function () {
       row.fill("");
     });
   }
-  return { getBoard, displayBoard, setCell, clear };
+  return { getBoard, setCell, clear };
 })();
 
 function createPlayer(name, sign) {
@@ -48,13 +41,17 @@ const game = (function () {
 
   function start(player1Name, player2Name, win) {
     gameboard.clear();
-    displayController.clearBoard();
+    displayController.clearBoardCells();
     player1 = createPlayer(player1Name, "X");
     player2 = createPlayer(player2Name, "O");
     currentPlayer = player1;
     lastStarter = player1;
     setWinningCondition(win);
     incrementRound();
+  }
+
+  function getPlayers() {
+    return [player1, player2]
   }
 
   function getCurrentPlayer() {
@@ -73,7 +70,7 @@ const game = (function () {
     isRoundOver = false;
   }
 
-  function checkForWinner() {
+  function getRoundResult() {
     const board = gameboard.getBoard();
     const pattern = [
       [
@@ -132,23 +129,6 @@ const game = (function () {
     return null;
   }
 
-  function getRoundResultMessage(winner) {
-    if (winner === "draw") {
-      return "No space left on the board. DRAW!";
-    }
-    return `Winner is: ${
-      winner === "X" ? player1.name : player2.name
-    } "${winner}"`;
-  }
-
-  function wonGame(winner) {
-    displayController.showStatus(
-      `Game Over! ${
-        winner === "X" ? player1.name : player2.name
-      } "${winner}" won the game`
-    );
-  }
-
   function hasRoundEnded() {
     return isRoundOver;
   }
@@ -173,7 +153,7 @@ const game = (function () {
     return round;
   }
 
-  function setScore(winner) {
+  function updateScore(winner) {
     if (winner === "X") {
       score.player1++;
     } else if (winner === "O") {
@@ -183,7 +163,7 @@ const game = (function () {
     }
   }
 
-  function getScore() {
+  function getMatchScore() {
     return { ...score };
   }
 
@@ -215,7 +195,7 @@ const game = (function () {
 
   function matchWon() {
     const winCondition = getWinningCondition();
-    const scores = getScore();
+    const scores = getMatchScore();
     const score1 = scores.player1;
     const score2 = scores.player2;
     if (score1 === winCondition || score2 === winCondition) {
@@ -226,20 +206,19 @@ const game = (function () {
 
   return {
     start,
+    getPlayers,
     getCurrentPlayer,
     switchPlayer,
     newRound,
-    checkForWinner,
-    getRoundResultMessage,
+    getRoundResult,
     hasRoundEnded,
     setRoundOver,
     getRound,
-    setScore,
-    getScore,
+    updateScore,
+    getMatchScore,
     resetGame,
     getWinningCondition,
     matchWon,
-    wonGame,
   };
 })();
 
@@ -259,7 +238,7 @@ const displayController = (function () {
   const scoreWin = document.querySelector("#score-win");
 
   board.addEventListener("click", (e) => {
-    checkBoard(e);
+    handleCellClick(e);
   });
 
   btnStartGame.addEventListener("click", () => {
@@ -269,19 +248,19 @@ const displayController = (function () {
       const conditionToWin = parseInt(scoreWin.value) || 3;
       game.start(name1, name2, conditionToWin);
       displayRound(game.getRound()); // new
-      showStatus(`${game.getCurrentPlayer().name}'s turn`);
+      displayMessage(`${game.getCurrentPlayer().name}'s turn`);
       btnStartGame.classList.add("hidden");
       disableInputs();
     } else {
-      showStatus("Please enter both names to start the game.");
+      displayMessage("Please enter both names to start the game.");
     }
   });
 
   btnNextRound.addEventListener("click", () => {
     game.newRound();
-    clearBoard();
+    clearBoardCells();
     displayRound(game.getRound()); // new
-    showStatus(`${game.getCurrentPlayer().name}'s turn`);
+    displayMessage(`${game.getCurrentPlayer().name}'s turn`);
     btnNextRound.classList.add("hidden");
     btnResetGame.classList.add("hidden");
   });
@@ -291,7 +270,7 @@ const displayController = (function () {
     resetUI();
   });
 
-  function checkBoard(e) {
+  function handleCellClick(e) {
     const cell = e.target;
     if (!cell.classList.contains("cell")) return;
     if (game.hasRoundEnded()) return;
@@ -305,23 +284,23 @@ const displayController = (function () {
     if (success) {
       cell.textContent = player.sign;
       game.switchPlayer();
-      const winnerRound = game.checkForWinner();
+      const winnerRound = game.getRoundResult();
       if(winnerRound === null) {
-        showStatus(`${game.getCurrentPlayer().name}'s turn`);
+        displayMessage(`${game.getCurrentPlayer().name}'s turn`);
       }
       else if(winnerRound === "draw") {
         game.setRoundOver();
-        game.setScore(winnerRound);
+        game.updateScore(winnerRound);
         displayScore();
-        showStatus(game.getRoundResultMessage(winnerRound));
+        displayMessage(formatResultMessage(winnerRound));
         btnNextRound.classList.remove("hidden");
       } else {
         game.setRoundOver();
-        game.setScore(winnerRound.winner);
+        game.updateScore(winnerRound.winner);
         displayScore();
-        showStatus(game.getRoundResultMessage(winnerRound.winner));
+        displayMessage(formatResultMessage(winnerRound.winner));
         if (game.matchWon()) {
-          game.wonGame(winnerRound.winner);
+          displayGameOver(winnerRound.winner);
           btnResetGame.classList.remove("hidden");
           highlightWinningCells(winnerRound.pattern);
           enableInputs();
@@ -333,48 +312,13 @@ const displayController = (function () {
     }
   }
 
-  function checkBoard1(e) {
-    const cell = e.target;
-    if (!cell.classList.contains("cell")) return;
-    if (game.hasRoundEnded()) return;
-
-    const row = cell.dataset.row;
-    const col = cell.dataset.col;
-
-    const player = game.getCurrentPlayer();
-    if (!player) return;
-    const success = gameboard.setCell(row, col, player);
-    if (success) {
-      cell.textContent = player.sign;
-      game.switchPlayer();
-      const winnerRound = game.checkForWinner();
-      if (winnerRound) {
-        game.setRoundOver();
-        game.setScore(winnerRound);
-        displayScore();
-        showStatus(game.getRoundResultMessage(winnerRound));
-
-        if (game.matchWon()) {
-          game.wonGame(winnerRound);
-          btnResetGame.classList.remove("hidden");
-          enableInputs();
-        } else {
-          btnNextRound.classList.remove("hidden");
-        }
-      } else {
-        showStatus(`${game.getCurrentPlayer().name}'s turn`);
-      }
-    }
-  }
-
-  function clearBoard() {
+  function clearBoardCells() {
     cells.forEach((cell) => {
       cell.textContent = "";
     });
   }
 
-
-  function showStatus(message) {
+  function displayMessage(message) {
     gameInfo.textContent = message;
   }
 
@@ -383,22 +327,36 @@ const displayController = (function () {
   }
 
   function displayScore() {
-    const score = game.getScore();
+    const score = game.getMatchScore();
     scorePlayer1.textContent = score.player1;
     scoreDraw.textContent = score.draw;
     scorePlayer2.textContent = score.player2;
   }
 
+  function formatResultMessage(winner) {
+    if (winner === "draw") {
+      return "No space left on the board. DRAW!";
+    }
+    return `Winner is: ${
+      winner === "X" ? game.getPlayers()[0].name : game.getPlayers()[1].name
+    } "${winner}"`;
+  }
+
+  function displayGameOver(winner) {
+    const resultMessage = formatResultMessage(winner);
+    displayMessage(`Game over!" ${resultMessage}`);
+  }
+
   function resetUI() {
     removeHighlightWinningCells();
-    clearBoard();
+    clearBoardCells();
     displayScore();
     displayRound(game.getRound());
     resetPlayerInputs();
     btnResetGame.classList.add("hidden");
     btnNextRound.classList.add("hidden");
     btnStartGame.classList.remove("hidden");
-    showStatus("Please enter both names to start the game.");
+    displayMessage("Please enter both names to start the game.");
   }
 
   function resetPlayerInputs() {
@@ -434,5 +392,5 @@ const displayController = (function () {
     })
   }
 
-  return { clearBoard, showStatus, displayRound, displayScore, resetUI };
+  return { clearBoardCells, displayMessage, displayRound, displayScore, resetUI };
 })();
