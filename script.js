@@ -237,11 +237,26 @@ const displayController = (function () {
   const rounds = document.querySelector("#rounds");
   const scoreWin = document.querySelector("#score-win");
 
+  const sounds = {
+    button: new Audio("sound/button-click.wav"),
+    cell: new Audio("sound/cell-click.wav"),
+    win: new Audio("sound/win.wav"),
+    draw: new Audio("sound/draw.wav"),
+  }
+
+  function playSound(sound) {
+    sound.currentTime = 0;
+    sound.volume = 0.5;
+    sound.play();
+    
+  }
+
   board.addEventListener("click", (e) => {
     handleCellClick(e);
   });
 
   btnStartGame.addEventListener("click", () => {
+    playSound(sounds.button);
     const name1 = inputPlayer1.value.trim();
     const name2 = inputPlayer2.value.trim();
     if (name1 != "" && name2 != "") {
@@ -257,16 +272,18 @@ const displayController = (function () {
   });
 
   btnNextRound.addEventListener("click", () => {
+    playSound(sounds.button);
     removeHighlightWinningCells();
     game.newRound();
     clearBoardCells();
-    displayRound(game.getRound()); // new
+    displayRound(game.getRound());
     displayMessage(`${game.getCurrentPlayer().name}'s turn`);
     btnNextRound.classList.add("hidden");
     btnResetGame.classList.add("hidden");
   });
 
   btnResetGame.addEventListener("click", () => {
+    playSound(sounds.button);
     game.resetGame();
     resetUI();
   });
@@ -319,6 +336,7 @@ const displayController = (function () {
     if (!player) return;
     const success = gameboard.setCell(row, col, player);
     if (success) {
+      playSound(sounds.cell);
       removePreviewTag(cell);
       cell.textContent = player.sign;
 
@@ -328,12 +346,14 @@ const displayController = (function () {
       if (winnerRound === null) {
         displayMessage(`${game.getCurrentPlayer().name}'s turn`);
       } else if (winnerRound === "draw") {
+        playSound(sounds.draw);
         game.setRoundOver();
         game.updateScore(winnerRound);
         displayScore();
         displayMessage(formatResultMessage(winnerRound));
         btnNextRound.classList.remove("hidden");
       } else {
+        playSound(sounds.win);
         game.setRoundOver();
         game.updateScore(winnerRound.winner);
         displayScore();
