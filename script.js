@@ -271,6 +271,42 @@ const displayController = (function () {
     resetUI();
   });
 
+  board.addEventListener("mouseover", (e) => {
+    previewSign(e);
+  });
+
+  board.addEventListener("mouseout", (e) => {
+    resetPreview(e);
+  });
+
+  function previewSign(e) {
+    const cell = e.target;
+    if (!cell.classList.contains("cell")) return;
+    if (game.hasRoundEnded()) return;
+    const player = game.getCurrentPlayer();
+    if (!player) return;
+
+    if (cell.textContent != "") return;
+    cell.classList.add("preview");
+    cell.textContent = player.sign;
+  }
+
+  function resetPreview(e) {
+    const cell = e.target;
+    if (!cell.classList.contains("cell")) return;
+    if (game.hasRoundEnded()) return;
+    if (cell.classList.contains("preview")) {
+      cell.classList.remove("preview");
+      cell.textContent = "";
+    }
+  }
+
+  function removePreviewTag(cell) {
+      if(cell.classList.contains("preview")) {
+        cell.classList.remove("preview");
+      }
+  }
+ 
   function handleCellClick(e) {
     const cell = e.target;
     if (!cell.classList.contains("cell")) return;
@@ -283,7 +319,10 @@ const displayController = (function () {
     if (!player) return;
     const success = gameboard.setCell(row, col, player);
     if (success) {
+      removePreviewTag(cell);
       cell.textContent = player.sign;
+
+
       game.switchPlayer();
       const winnerRound = game.getRoundResult();
       if (winnerRound === null) {
