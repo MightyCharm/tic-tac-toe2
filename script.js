@@ -167,6 +167,12 @@ const game = (function () {
     return { ...score };
   }
 
+  function resetPlayers() {
+    player1 = null;
+    player2 = null;
+    currentPlayer = null;
+  }
+
   function resetScore() {
     score.player1 = 0;
     score.player2 = 0;
@@ -178,6 +184,7 @@ const game = (function () {
   }
 
   function resetGame() {
+    resetPlayers();
     resetScore();
     resetRounds();
     resetRoundOver();
