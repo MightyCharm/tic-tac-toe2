@@ -11,9 +11,9 @@ const gameboard = (function () {
     return board.map((row) => row.slice());
   }
 
-  function setCell(row, column, player) {
+  function setCell(row, column, sign) {
     if (board[row][column] === "") {
-      board[row][column] = player.sign;
+      board[row][column] = sign;
       return true;
     }
     return false;
@@ -211,6 +211,38 @@ const game = (function () {
     return false;
   }
 
+  function tryMove(r, c) {
+    const row = r;
+    const col = c;
+    const result = {
+      currentPlayer: getCurrentPlayer(),
+      validMove: false,
+      winnerRound: null,
+      winnerGame: false,
+    };
+    if (result.currentPlayer) {
+      const isSet = gameboard.setCell(row, col, result.currentPlayer.sign);
+      result.validMove = isSet;
+      result.winnerRound = getRoundResult();
+    }
+    return result;
+  }
+
+  function play(row, col) {
+    const result = tryMove(row, col);
+    if (result.validMove) {
+      if (result.winnerRound === null) {
+        switchPlayer();
+      } else if (result.winnerRound === "draw") {
+        updateScore(result.winnerRound);
+      } else {
+        updateScore(result.winnerRound.winner);
+        result.winnerGame = matchWon(result.winnerRound.winner);
+      }
+    }
+    return result;
+  }
+
   return {
     start,
     getPlayers,
@@ -226,6 +258,8 @@ const game = (function () {
     resetGame,
     getWinningCondition,
     matchWon,
+    tryMove,
+    play,
   };
 })();
 
@@ -244,18 +278,53 @@ const displayController = (function () {
   const rounds = document.querySelector("#rounds");
   const scoreWin = document.querySelector("#score-win");
 
+  function handleCellClick(e) {
+    const cell = e.target;
+    if (!cell.classList.contains("cell")) return;
+    if (game.hasRoundEnded()) return;
+    if (!game.getCurrentPlayer()) return;
+
+    const row = cell.dataset.row;
+    const col = cell.dataset.col;
+    const result = game.play(row, col);
+    playSound(sounds.cell);
+    if (result.validMove) {
+      removePreviewTag(cell);
+      cell.textContent = result.currentPlayer.sign;
+      if (result.winnerRound === null) {
+        displayMessage(`${game.getCurrentPlayer().name}'s turn`);
+      } else if (result.winnerRound === "draw") {
+        playSound(sounds.draw);
+        displayScore();
+        btnNextRound.classList.remove("hidden");
+        displayMessage(formatResultMessage(result.winnerRound));
+      } else {
+        playSound(sounds.win);
+        displayScore();
+        displayMessage(formatResultMessage(result.winnerRound.winner));
+        highlightWinningCells(result.winnerRound.pattern);
+        if (!result.winnerGame) {
+          btnNextRound.classList.remove("hidden");
+        } else {
+          displayGameOver(result.winnerRound.winner);
+          btnResetGame.classList.remove("hidden");
+          enableInputs();
+        }
+      }
+    }
+  }
+
   const sounds = {
     button: new Audio("sound/button-click.wav"),
     cell: new Audio("sound/cell-click.wav"),
     win: new Audio("sound/win.wav"),
     draw: new Audio("sound/draw.wav"),
-  }
+  };
 
   function playSound(sound) {
     sound.currentTime = 0;
     sound.volume = 0.5;
     sound.play();
-    
   }
 
   board.addEventListener("click", (e) => {
@@ -326,54 +395,8 @@ const displayController = (function () {
   }
 
   function removePreviewTag(cell) {
-      if(cell.classList.contains("preview")) {
-        cell.classList.remove("preview");
-      }
-  }
- 
-  function handleCellClick(e) {
-    const cell = e.target;
-    if (!cell.classList.contains("cell")) return;
-    if (game.hasRoundEnded()) return;
-
-    const row = cell.dataset.row;
-    const col = cell.dataset.col;
-
-    const player = game.getCurrentPlayer();
-    if (!player) return;
-    const success = gameboard.setCell(row, col, player);
-    if (success) {
-      playSound(sounds.cell);
-      removePreviewTag(cell);
-      cell.textContent = player.sign;
-
-
-      game.switchPlayer();
-      const winnerRound = game.getRoundResult();
-      if (winnerRound === null) {
-        displayMessage(`${game.getCurrentPlayer().name}'s turn`);
-      } else if (winnerRound === "draw") {
-        playSound(sounds.draw);
-        game.setRoundOver();
-        game.updateScore(winnerRound);
-        displayScore();
-        displayMessage(formatResultMessage(winnerRound));
-        btnNextRound.classList.remove("hidden");
-      } else {
-        playSound(sounds.win);
-        game.setRoundOver();
-        game.updateScore(winnerRound.winner);
-        displayScore();
-        displayMessage(formatResultMessage(winnerRound.winner));
-        highlightWinningCells(winnerRound.pattern);
-        if (game.matchWon()) {
-          displayGameOver(winnerRound.winner);
-          btnResetGame.classList.remove("hidden");
-          enableInputs();
-        } else {
-          btnNextRound.classList.remove("hidden");
-        }
-      }
+    if (cell.classList.contains("preview")) {
+      cell.classList.remove("preview");
     }
   }
 
