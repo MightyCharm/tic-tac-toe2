@@ -292,6 +292,7 @@ const displayController = (function () {
   const sounds = {
     button: new Audio("sound/button-click.wav"),
     cell: new Audio("sound/cell-click.wav"),
+    invalidCellClick: new Audio("sound/cell-click-invalid.wav"),
     win: new Audio("sound/win.wav"),
     draw: new Audio("sound/draw.wav"),
   };
@@ -345,21 +346,36 @@ const displayController = (function () {
   });
 
   function handleCellClick(e) {
-    if (isCooldown) return;
+    const cell = e.target;
+    if (!cell.classList.contains("cell")) return;
+
+    if (isCooldown) {
+      playSound(sounds.invalidCellClick);
+      return;
+    }
     isCooldown = true;
     setTimeout(() => {
       isCooldown = false;
-    }, 500);
+    }, 300);
 
-    const cell = e.target;
-    if (!cell.classList.contains("cell")) return;
-    if (game.hasRoundEnded()) return;
-    if (!game.getCurrentPlayer()) return;
+    if (game.hasRoundEnded()) {
+      playSound(sounds.invalidCellClick);
+      cell.classList.add("animation-shake");
+      setTimeout(() => cell.classList.remove("animation-shake"), 300);
+      return;
+    }
+    if (!game.getCurrentPlayer()) {
+      playSound(sounds.invalidCellClick);
+      cell.classList.add("animation-shake");
+      setTimeout(() => cell.classList.remove("animation-shake"), 300);
+      return;
+    }
 
     const row = cell.dataset.row;
     const col = cell.dataset.col;
     const result = game.play(row, col);
     playSound(sounds.cell);
+
     if (result.validMove) {
       removePreviewTag(cell);
       cell.textContent = result.currentPlayer.sign;
@@ -383,6 +399,10 @@ const displayController = (function () {
           btnRematch.classList.remove("hidden");
         }
       }
+    } else {
+      playSound(sounds.invalidCellClick);
+      cell.classList.add("animation-shake");
+      setTimeout(() => cell.classList.remove("animation-shake"), 300);
     }
   }
 
