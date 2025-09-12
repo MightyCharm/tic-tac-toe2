@@ -65,9 +65,9 @@ const game = (function () {
   function newRound() {
     gameboard.clear();
     incrementRound();
+    resetRoundOver();
     currentPlayer = lastStarter === player1 ? player2 : player1;
     lastStarter = currentPlayer;
-    isRoundOver = false;
   }
 
   function getRoundResult() {
@@ -183,6 +183,14 @@ const game = (function () {
     lastStarter = null;
   }
 
+  function rematchGame() {
+    resetScore();
+    resetRounds();
+    resetRoundOver();
+    resetLastStarter();
+    gameboard.clear();
+  }
+
   function resetGame() {
     resetPlayers();
     resetScore();
@@ -235,9 +243,11 @@ const game = (function () {
         switchPlayer();
       } else if (result.winnerRound === "draw") {
         updateScore(result.winnerRound);
+        game.setRoundOver();
       } else {
         updateScore(result.winnerRound.winner);
         result.winnerGame = matchWon(result.winnerRound.winner);
+        game.setRoundOver();
       }
     }
     return result;
@@ -255,6 +265,7 @@ const game = (function () {
     getRound,
     updateScore,
     getMatchScore,
+    rematchGame,
     resetGame,
     getWinningCondition,
     matchWon,
@@ -269,14 +280,69 @@ const displayController = (function () {
   const inputPlayer1 = document.querySelector("#input-player-1");
   const inputPlayer2 = document.querySelector("#input-player-2");
   const gameInfo = document.querySelector(".game-info");
-  const btnStartGame = document.querySelector("#btn-start-game");
+  const btnNewGame = document.querySelector("#btn-new-game");
   const btnNextRound = document.querySelector("#btn-next-round");
-  const btnResetGame = document.querySelector("#btn-restart-game");
+  const btnRematch = document.querySelector("#btn-rematch");
   const scorePlayer1 = document.querySelector("#score-player-1");
   const scoreDraw = document.querySelector("#score-draw");
   const scorePlayer2 = document.querySelector("#score-player-2");
   const rounds = document.querySelector("#rounds");
   const scoreWin = document.querySelector("#score-win");
+
+  const sounds = {
+    button: new Audio("sound/button-click.wav"),
+    cell: new Audio("sound/cell-click.wav"),
+    win: new Audio("sound/win.wav"),
+    draw: new Audio("sound/draw.wav"),
+  };
+
+  board.addEventListener("click", (e) => {
+    handleCellClick(e);
+  });
+
+  btnNewGame.addEventListener("click", () => {
+    playSound(sounds.button);
+    if (game.getCurrentPlayer()) {
+      game.resetGame();
+      resetUIForNewGame();
+    }
+    const name1 = inputPlayer1.value.trim();
+    const name2 = inputPlayer2.value.trim();
+    if (name1 != "" && name2 != "") {
+      const conditionToWin = parseInt(scoreWin.value) || 3;
+      game.start(name1, name2, conditionToWin);
+      displayRound(game.getRound());
+      displayMessage(`${game.getCurrentPlayer().name}'s turn`);
+      btnNewGame.classList.add("hidden");
+      disableInputs();
+    } else {
+      displayMessage("Please enter both names to start the game.");
+    }
+  });
+
+  btnNextRound.addEventListener("click", () => {
+    playSound(sounds.button);
+    removeHighlightWinningCells();
+    game.newRound();
+    clearBoardCells();
+    displayRound(game.getRound());
+    displayMessage(`${game.getCurrentPlayer().name}'s turn`);
+    btnNextRound.classList.add("hidden");
+  });
+
+  btnRematch.addEventListener("click", () => {
+    playSound(sounds.button);
+    game.rematchGame();
+    resetUIForRematch();
+  });
+
+  board.addEventListener("mouseover", (e) => {
+    previewSign(e);
+  });
+
+  board.addEventListener("mouseout", (e) => {
+    resetPreview(e);
+  });
 
   function handleCellClick(e) {
     const cell = e.target;
@@ -307,70 +373,13 @@ const displayController = (function () {
           btnNextRound.classList.remove("hidden");
         } else {
           displayGameOver(result.winnerRound.winner);
-          btnResetGame.classList.remove("hidden");
-          enableInputs();
+          btnNewGame.classList.remove("hidden");
+          btnRematch.classList.remove("hidden");
+          // enableInputs();
         }
       }
     }
   }
-
-  const sounds = {
-    button: new Audio("sound/button-click.wav"),
-    cell: new Audio("sound/cell-click.wav"),
-    win: new Audio("sound/win.wav"),
-    draw: new Audio("sound/draw.wav"),
-  };
-
-  function playSound(sound) {
-    sound.currentTime = 0;
-    sound.volume = 0.5;
-    sound.play();
-  }
-
-  board.addEventListener("click", (e) => {
-    handleCellClick(e);
-  });
-
-  btnStartGame.addEventListener("click", () => {
-    playSound(sounds.button);
-    const name1 = inputPlayer1.value.trim();
-    const name2 = inputPlayer2.value.trim();
-    if (name1 != "" && name2 != "") {
-      const conditionToWin = parseInt(scoreWin.value) || 3;
-      game.start(name1, name2, conditionToWin);
-      displayRound(game.getRound()); // new
-      displayMessage(`${game.getCurrentPlayer().name}'s turn`);
-      btnStartGame.classList.add("hidden");
-      disableInputs();
-    } else {
-      displayMessage("Please enter both names to start the game.");
-    }
-  });
-
-  btnNextRound.addEventListener("click", () => {
-    playSound(sounds.button);
-    removeHighlightWinningCells();
-    game.newRound();
-    clearBoardCells();
-    displayRound(game.getRound());
-    displayMessage(`${game.getCurrentPlayer().name}'s turn`);
-    btnNextRound.classList.add("hidden");
-    btnResetGame.classList.add("hidden");
-  });
-
-  btnResetGame.addEventListener("click", () => {
-    playSound(sounds.button);
-    game.resetGame();
-    resetUI();
-  });
-
-  board.addEventListener("mouseover", (e) => {
-    previewSign(e);
-  });
-
-  board.addEventListener("mouseout", (e) => {
-    resetPreview(e);
-  });
 
   function previewSign(e) {
     const cell = e.target;
@@ -435,16 +444,25 @@ const displayController = (function () {
     displayMessage(`Game over!" ${resultMessage}`);
   }
 
-  function resetUI() {
+  function resetUIForRematch() {
+    removeHighlightWinningCells();
+    clearBoardCells();
+    displayScore();
+    displayRound(game.getRound());
+    displayMessage("New Match started!");
+    btnRematch.classList.add("hidden");
+    btnNewGame.classList.add("hidden");
+  }
+
+  function resetUIForNewGame() {
     removeHighlightWinningCells();
     clearBoardCells();
     displayScore();
     displayRound(game.getRound());
     resetPlayerInputs();
-    btnResetGame.classList.add("hidden");
-    btnNextRound.classList.add("hidden");
-    btnStartGame.classList.remove("hidden");
+    enableInputs();
     displayMessage("Please enter both names to start the game.");
+    btnRematch.classList.add("hidden");
   }
 
   function resetPlayerInputs() {
@@ -480,11 +498,16 @@ const displayController = (function () {
     });
   }
 
+  function playSound(sound) {
+    sound.currentTime = 0;
+    sound.volume = 0.5;
+    sound.play();
+  }
+
   return {
     clearBoardCells,
     displayMessage,
     displayRound,
     displayScore,
-    resetUI,
   };
 })();
