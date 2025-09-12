@@ -288,7 +288,7 @@ const displayController = (function () {
   const scorePlayer2 = document.querySelector("#score-player-2");
   const rounds = document.querySelector("#rounds");
   const scoreWin = document.querySelector("#score-win");
-
+  let isCooldown = false;
   const sounds = {
     button: new Audio("sound/button-click.wav"),
     cell: new Audio("sound/cell-click.wav"),
@@ -345,6 +345,12 @@ const displayController = (function () {
   });
 
   function handleCellClick(e) {
+    if (isCooldown) return;
+    isCooldown = true;
+    setTimeout(() => {
+      isCooldown = false;
+    }, 500);
+
     const cell = e.target;
     if (!cell.classList.contains("cell")) return;
     if (game.hasRoundEnded()) return;
@@ -375,7 +381,6 @@ const displayController = (function () {
           displayGameOver(result.winnerRound.winner);
           btnNewGame.classList.remove("hidden");
           btnRematch.classList.remove("hidden");
-          // enableInputs();
         }
       }
     }

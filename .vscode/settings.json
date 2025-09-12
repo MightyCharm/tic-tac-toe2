@@ -8,5 +8,8 @@
         "display",
         "game",
         "displayController"
+    ],
+    "cSpell.ignoreWords": [
+        "Cooldown"
     ]
 }
