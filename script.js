@@ -47,7 +47,6 @@ const game = (function () {
     currentPlayer = player1;
     lastStarter = player1;
     setWinningCondition(win);
-    incrementRound();
   }
 
   function getPlayers() {
@@ -142,7 +141,7 @@ const game = (function () {
   }
 
   function resetRounds() {
-    round = 0;
+    round = 1;
   }
 
   function incrementRound() {
@@ -224,6 +223,7 @@ const game = (function () {
     const col = c;
     const result = {
       currentPlayer: getCurrentPlayer(),
+      nextPlayer: null,
       validMove: false,
       winnerRound: null,
       winnerGame: false,
@@ -241,6 +241,7 @@ const game = (function () {
     if (result.validMove) {
       if (result.winnerRound === null) {
         switchPlayer();
+        result.nextPlayer = currentPlayer;
       } else if (result.winnerRound === "draw") {
         updateScore(result.winnerRound);
         game.setRoundOver();
@@ -277,8 +278,8 @@ const game = (function () {
 const displayController = (function () {
   const board = document.querySelector("#board");
   const cells = document.querySelectorAll(".cell");
-  const inputPlayer1 = document.querySelector("#input-player-1");
-  const inputPlayer2 = document.querySelector("#input-player-2");
+  const inputPlayer1 = document.querySelector("#player-input-1");
+  const inputPlayer2 = document.querySelector("#player-input-2");
   const gameInfo = document.querySelector(".game-info");
   const btnNewGame = document.querySelector("#btn-new-game");
   const btnNextRound = document.querySelector("#btn-next-round");
@@ -288,6 +289,12 @@ const displayController = (function () {
   const scorePlayer2 = document.querySelector("#score-player-2");
   const rounds = document.querySelector("#rounds");
   const scoreWin = document.querySelector("#score-win");
+  const headerPlayer1 = document.querySelector("#player-1-header");
+  const headerPlayer2 = document.querySelector("#player-2-header");
+  const body = document.querySelector("body");
+  const playerForm1 = document.querySelector("#player-form-1");
+  const playerForm2 = document.querySelector("#player-form-2");
+
   let isCooldown = false;
   const sounds = {
     button: new Audio("sound/button-click.wav"),
@@ -316,6 +323,8 @@ const displayController = (function () {
       displayMessage(`${game.getCurrentPlayer().name}'s turn`);
       btnNewGame.classList.add("hidden");
       disableInputs();
+      const result = { nextPlayer: game.getCurrentPlayer() };
+      highlightPlayer(result);
     } else {
       displayMessage("Please enter both names to start the game.");
     }
@@ -329,12 +338,16 @@ const displayController = (function () {
     displayRound(game.getRound());
     displayMessage(`${game.getCurrentPlayer().name}'s turn`);
     btnNextRound.classList.add("hidden");
+    const result = { nextPlayer: game.getCurrentPlayer() };
+    highlightPlayer(result);
   });
 
   btnRematch.addEventListener("click", () => {
     playSound(sounds.button);
     game.rematchGame();
     resetUIForRematch();
+    const result = { nextPlayer: game.getCurrentPlayer() };
+    highlightPlayer(result);
   });
 
   board.addEventListener("mouseover", (e) => {
@@ -344,6 +357,34 @@ const displayController = (function () {
   board.addEventListener("mouseout", (e) => {
     resetPreview(e);
   });
+
+  function highlightPlayer(result) {
+    if (result.nextPlayer) {
+      if (result.nextPlayer.sign === game.getPlayers()[0].sign) {
+        headerPlayer1.classList.add("active");
+        headerPlayer1.classList.remove("inactive");
+        headerPlayer2.classList.add("inactive");
+        headerPlayer2.classList.remove("active")
+
+        playerForm1.classList.add("active");
+        playerForm2.classList.remove("active");
+
+        body.classList.add("active-border-left");
+        body.classList.remove("active-border-right");
+      } else {
+        headerPlayer1.classList.add("inactive");
+        headerPlayer1.classList.remove("active");
+        headerPlayer2.classList.add("active");
+        headerPlayer2.classList.remove("inactive");
+
+        playerForm1.classList.remove("active");
+        playerForm2.classList.add("active");
+
+        body.classList.remove("active-border-left");
+        body.classList.add("active-border-right");
+      }
+    }
+  }
 
   function handleCellClick(e) {
     const cell = e.target;
@@ -374,6 +415,8 @@ const displayController = (function () {
     const row = cell.dataset.row;
     const col = cell.dataset.col;
     const result = game.play(row, col);
+    highlightPlayer(result);
+
     playSound(sounds.cell);
 
     if (result.validMove) {

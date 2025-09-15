@@ -34,7 +34,7 @@
       </div>
 
       <div class="round-counter">
-        <p>Round: <span id="rounds">0</span></p>
+        <p>Round: <span id="rounds">1</span></p>
       </div>
 
       <div class="win-condition">
@@ -42,9 +42,10 @@
         <input id="score-win" class="score-input" type="number" min="1" max="5" value="3">
       </div>
 
-      <div class="player-form-1">
-        <h2 class="player-form-header">Player 1</h2>
-        <input id="input-player-1" class="player-form-input"/>
+      <div id="player-form-1" class="player-form-1">
+        <div class="player-marker"></div>
+        <h2 id="player-1-header" class="player-form-header">Player 1</h2>
+        <input id="player-input-1" class="player-form-input"/>
       </div>
 
       <div id="board" class="game-board">
@@ -61,9 +62,10 @@
         <div class="cell" data-row="2" data-col="2"></div>
       </div>
 
-      <div class="player-form-2">
-        <h2 class="player-form-header">Player 2</h2>
-        <input id="input-player-2" class="player-form-input"/>
+      <div id="player-form-2" class="player-form-2">
+        <div class="player-marker"></div>
+        <h2 id="player-2-header" class="player-form-header">Player 2</h2>
+        <input id="player-input-2" class="player-form-input"/>
       </div>
 
       <div class="game-info">
