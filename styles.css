@@ -5,10 +5,10 @@
 }
 
 :root {
+  --border-thickness: 6px;
   --bg-color: hsl(0, 0%, 7%); /* background-color body */
   --col-text-score: hsl(214, 32%, 91%); /* .score, .score-win-label-input */
-  --col-header-game: hsl(210, 40%, 98%);; 
-  --border-thickness: 6px;
+  --col-header-game: hsl(210, 40%, 98%);
 }
 
 body {
@@ -42,7 +42,6 @@ body {
 
   box-shadow: 0 0 20px hsla(0, 0%, 0%, 0.2);
   border-radius: 8px;
-
 }
 
 .header {
@@ -50,8 +49,8 @@ body {
 }
 
 .header h1 {
-  color: var(--col-header-game);
   text-shadow: 0 0 8px hsla(0, 0%, 100%, 0.1);
+  color: var(--col-header-game);
 }
 
 .scoreboard {
@@ -61,8 +60,8 @@ body {
 
   padding: 0.5rem 0;
   border-radius: 6px;
-  background: hsla(0, 0%, 0%, 0.2);
   backdrop-filter: blur(4px);
+  background: hsla(0, 0%, 0%, 0.2);
 }
 
 .score-column {
@@ -96,8 +95,8 @@ body {
 .round-counter {
   grid-area: round;
   text-align: center;
-  color: hsl(218, 11%, 65%);
   font-size: 0.9rem;
+  color: hsl(218, 11%, 65%);
 }
 
 .game-controls {
@@ -105,12 +104,12 @@ body {
   min-height: 40px;
 }
 
- .win-condition {
+.win-condition {
   grid-area: win-condition;
 
   display: flex;
   column-gap: 1rem;
- }
+}
 
 .score-win-label-input {
   color: var(--col-text-score);
@@ -130,10 +129,10 @@ body {
 .player-form-header {
   grid-column: 2 / 3;
 
-  color: hsl(0, 0%, 50%);
   font-size: 1.1rem;
   font-weight: 600;
   transition: 0.3s ease;
+  color: hsl(0, 0%, 50%);
 }
 
 .player-form-input {
@@ -170,8 +169,8 @@ body {
 }
 
 .cell:hover {
-  background: hsl(0, 0%, 94%);
   transform: scale(0.95);
+  background: hsl(0, 0%, 94%);
 }
 
 .player-form-2 {
@@ -179,7 +178,7 @@ body {
 
   display: grid;
   grid-template-columns: 1fr 5fr;
-  column-gap: 10px;;
+  column-gap: 10px;
 }
 
 .game-info {
@@ -187,8 +186,8 @@ body {
 }
 
 .game-info {
-  color: var(--col-header-game);
   font-size: 1.2rem;
+  color: var(--col-header-game);
 }
 
 .hidden {
@@ -201,7 +200,6 @@ body {
   border: none;
   border-radius: 2px;
   padding: 0.5rem 0.4rem;
-  
 }
 
 .btn:hover {
@@ -210,7 +208,7 @@ body {
 }
 
 .highlight {
-  background-color: hsl(204, 100%, 40%);;
+  background-color: hsl(204, 100%, 40%);
 }
 
 @keyframes shake {
@@ -231,10 +229,6 @@ body {
 
 .active {
   color: hsl(0, 0%, 100%);
-}
-
-.inactive {
-  color: hsl(0, 0%, 50%);
 }
 
 .active-border-left {
@@ -260,6 +254,6 @@ body {
 .player-form-2.active .player-marker {
   background: white;
   box-shadow: 0px 0px 1px 1px hsla(0, 0%, 100%, 0.9),
-              0px 0px 3px 3px hsla(0, 0%, 100%, 0.5),
-              0px 0px 5px 5px hsla(0, 0%, 100%, 0.4);
+    0px 0px 3px 3px hsla(0, 0%, 100%, 0.5),
+    0px 0px 5px 5px hsla(0, 0%, 100%, 0.4);
 }

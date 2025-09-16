@@ -361,29 +361,29 @@ const displayController = (function () {
   function highlightPlayer(result) {
     if (result.nextPlayer) {
       if (result.nextPlayer.sign === game.getPlayers()[0].sign) {
-        headerPlayer1.classList.add("active");
-        headerPlayer1.classList.remove("inactive");
-        headerPlayer2.classList.add("inactive");
-        headerPlayer2.classList.remove("active")
-
-        playerForm1.classList.add("active");
-        playerForm2.classList.remove("active");
-
         body.classList.add("active-border-left");
         body.classList.remove("active-border-right");
+        headerPlayer1.classList.add("active");
+        headerPlayer2.classList.remove("active");
+        playerForm1.classList.add("active");
+        playerForm2.classList.remove("active");
       } else {
-        headerPlayer1.classList.add("inactive");
-        headerPlayer1.classList.remove("active");
-        headerPlayer2.classList.add("active");
-        headerPlayer2.classList.remove("inactive");
-
-        playerForm1.classList.remove("active");
-        playerForm2.classList.add("active");
-
         body.classList.remove("active-border-left");
         body.classList.add("active-border-right");
+        headerPlayer1.classList.remove("active");
+        headerPlayer2.classList.add("active");
+        playerForm1.classList.remove("active");
+        playerForm2.classList.add("active");
       }
     }
+  }
+
+  function clearHighlightPlayer() {
+    body.classList.remove("active-border-left", "active-border-right");
+    headerPlayer1.classList.remove("active");
+    headerPlayer2.classList.remove("active");
+    playerForm1.classList.remove("active");
+    playerForm2.classList.remove("active");
   }
 
   function handleCellClick(e) {
@@ -523,12 +523,14 @@ const displayController = (function () {
   }
 
   function resetUIForNewGame() {
+    console.log("resetUIForNewGame");
     removeHighlightWinningCells();
     clearBoardCells();
     displayScore();
     displayRound(game.getRound());
     resetPlayerInputs();
     enableInputs();
+    clearHighlightPlayer();
     displayMessage("Please enter both names to start the game.");
     btnRematch.classList.add("hidden");
   }
