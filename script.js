@@ -35,9 +35,10 @@ const game = (function () {
   let player1, player2, currentPlayer;
   let isRoundOver = false;
   let lastStarter = null;
-  let round = 0;
+  let round = 1;
   const score = { player1: 0, player2: 0, draw: 0 };
   let winningCondition = null;
+  let loserOfGame = null;
 
   function start(player1Name, player2Name, win) {
     gameboard.clear();
@@ -183,11 +184,13 @@ const game = (function () {
   }
 
   function rematchGame() {
+    console.log("rematchGame");
     resetScore();
     resetRounds();
     resetRoundOver();
-    resetLastStarter();
     gameboard.clear();
+    currentPlayer = loserOfGame;
+    loserOfGame = null;
   }
 
   function resetGame() {
@@ -207,15 +210,12 @@ const game = (function () {
     return winningCondition;
   }
 
-  function matchWon() {
+  function matchWon(winner) {
     const winCondition = getWinningCondition();
     const scores = getMatchScore();
-    const score1 = scores.player1;
-    const score2 = scores.player2;
-    if (score1 === winCondition || score2 === winCondition) {
-      return true;
-    }
-    return false;
+    console.log(winner);
+    const playerScore = winner === player1.sign ? scores.player1 : scores.player2;
+    return playerScore === winCondition;
   }
 
   function tryMove(r, c) {
@@ -248,6 +248,9 @@ const game = (function () {
       } else {
         updateScore(result.winnerRound.winner);
         result.winnerGame = matchWon(result.winnerRound.winner);
+        if(result.winnerGame) {
+          loserOfGame = result.winnerRound.winner === player1.sign ? player2 : player1;
+        }
         game.setRoundOver();
       }
     }
