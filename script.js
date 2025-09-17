@@ -31,6 +31,9 @@ function createPlayer(name, sign) {
   return { name, sign };
 }
 
+const MARKS = { PLAYER1: "X", PLAYER2: "O" };
+const RESULT = { DRAW: "draw" };
+
 const game = (function () {
   let player1, player2, currentPlayer;
   let isRoundOver = false;
@@ -43,8 +46,8 @@ const game = (function () {
   function start(player1Name, player2Name, win) {
     gameboard.clear();
     displayController.clearBoardCells();
-    player1 = createPlayer(player1Name, "X");
-    player2 = createPlayer(player2Name, "O");
+    player1 = createPlayer(player1Name, MARKS.PLAYER1);
+    player2 = createPlayer(player2Name, MARKS.PLAYER2);
     currentPlayer = player1;
     lastStarter = player1;
     setWinningCondition(win);
@@ -124,7 +127,7 @@ const game = (function () {
       }
     }
     const full = board.every((row) => row.every((cell) => cell != ""));
-    if (full) return "draw";
+    if (full) return RESULT.DRAW;
 
     return null;
   }
@@ -154,9 +157,9 @@ const game = (function () {
   }
 
   function updateScore(winner) {
-    if (winner === "X") {
+    if (winner === MARKS.PLAYER1) {
       score.player1++;
-    } else if (winner === "O") {
+    } else if (winner === MARKS.PLAYER2) {
       score.player2++;
     } else {
       score.draw++;
@@ -214,7 +217,8 @@ const game = (function () {
     const winCondition = getWinningCondition();
     const scores = getMatchScore();
     console.log(winner);
-    const playerScore = winner === player1.sign ? scores.player1 : scores.player2;
+    const playerScore =
+      winner === player1.sign ? scores.player1 : scores.player2;
     return playerScore === winCondition;
   }
 
@@ -248,8 +252,9 @@ const game = (function () {
       } else {
         updateScore(result.winnerRound.winner);
         result.winnerGame = matchWon(result.winnerRound.winner);
-        if(result.winnerGame) {
-          loserOfGame = result.winnerRound.winner === player1.sign ? player2 : player1;
+        if (result.winnerGame) {
+          loserOfGame =
+            result.winnerRound.winner === player1.sign ? player2 : player1;
         }
         game.setRoundOver();
       }
@@ -427,7 +432,7 @@ const displayController = (function () {
       cell.textContent = result.currentPlayer.sign;
       if (result.winnerRound === null) {
         displayMessage(`${game.getCurrentPlayer().name}'s turn`);
-      } else if (result.winnerRound === "draw") {
+      } else if (result.winnerRound === RESULT.DRAW) {
         playSound(sounds.draw);
         displayScore();
         btnNextRound.classList.remove("hidden");
@@ -502,11 +507,11 @@ const displayController = (function () {
   }
 
   function formatResultMessage(winner) {
-    if (winner === "draw") {
+    if (winner === RESULT.DRAW) {
       return "No space left on the board. DRAW!";
     }
     return `Winner is: ${
-      winner === "X" ? game.getPlayers()[0].name : game.getPlayers()[1].name
+      winner === MARKS.PLAYER1 ? game.getPlayers()[0].name : game.getPlayers()[1].name
     } "${winner}"`;
   }
 
