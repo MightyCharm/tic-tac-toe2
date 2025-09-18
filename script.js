@@ -304,12 +304,20 @@ const displayController = (function () {
   const playerForm2 = document.querySelector("#player-form-2");
 
   let isCooldown = false;
+
+  function createSound(src) {
+    const sound = new Audio(src);
+    sound.load();
+    sound.volume = 0.5;
+    return sound;
+  }
+
   const sounds = {
-    button: new Audio("sound/button-click.wav"),
-    cell: new Audio("sound/cell-click.wav"),
-    invalidCellClick: new Audio("sound/cell-click-invalid.wav"),
-    win: new Audio("sound/win.wav"),
-    draw: new Audio("sound/draw.wav"),
+    button: createSound("sound/button-click.wav"),
+    cell: createSound("sound/cell-click.wav"),
+    invalidCellClick: createSound("sound/cell-click-invalid.wav"),
+    win: createSound("sound/win.wav"),
+    draw: createSound("sound/draw.wav"),
   };
 
   board.addEventListener("click", (e) => {
@@ -578,7 +586,6 @@ const displayController = (function () {
 
   function playSound(sound) {
     sound.currentTime = 0;
-    sound.volume = 0.5;
     sound.play();
   }
 
